@@ -315,6 +315,110 @@ textarea{resize:none;line-height:1.5;}
   <button id="admin-fab" onclick="openAdmin()">⚙</button>
 </div>
 
+<!-- ADMIN HOME SCREEN -->
+<div class="screen" id="s-admin">
+  <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:20px;font-weight:900;color:var(--white);letter-spacing:-1px;">12:12 <span style="color:var(--pink);font-size:13px;font-weight:500;">관리자</span></div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#555;"><span class="sync-dot live"></span>실시간 연동</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:20px;">
+
+    <!-- 고유 코드 -->
+    <div class="sec-lbl">현재 고유 코드</div>
+    <div class="info-card">
+      <div class="code-display" id="admin-home-code">1212</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="admin-home-code-inp" placeholder="새 코드 입력" style="flex:1;font-size:14px;padding:9px 12px;">
+        <button onclick="changeCodeFromHome()" style="padding:9px 16px;border-radius:10px;border:none;background:var(--pink);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">변경</button>
+      </div>
+    </div>
+
+    <!-- 게스트 현황 -->
+    <div class="sec-lbl">실시간 게스트 현황</div>
+    <div class="guests-grid">
+      <div class="guest-stat"><div class="gs-num" id="ags-total" style="color:var(--text);">0</div><div class="gs-label">전체</div></div>
+      <div class="guest-stat"><div class="gs-num" id="ags-m" style="color:var(--blue);">0</div><div class="gs-label">남성</div></div>
+      <div class="guest-stat"><div class="gs-num" id="ags-f" style="color:var(--pink);">0</div><div class="gs-label">여성</div></div>
+      <div class="guest-stat"><div class="gs-num" id="ags-match" style="color:var(--teal);">0</div><div class="gs-label">매칭</div></div>
+    </div>
+
+    <!-- 입장한 게스트 -->
+    <div class="sec-lbl">입장한 게스트</div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:16px;">
+      <div id="admin-home-guests"><div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div></div>
+    </div>
+
+    <!-- 타임라인 -->
+    <div class="sec-lbl">타임라인</div>
+    <div id="admin-home-timeline"></div>
+
+    <!-- 룸 관리 -->
+    <div class="sec-lbl" style="margin-top:16px;">룸 관리</div>
+    <div id="admin-home-rooms"></div>
+
+    <div style="height:40px;"></div>
+  </div>
+
+  <!-- 룸 상세 패널 -->
+  <div id="admin-room-detail-panel" style="display:none;position:absolute;inset:0;background:var(--bg);overflow-y:auto;z-index:10;">
+    <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
+      <button onclick="closeRoomDetail()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;padding:0;">←</button>
+      <div style="font-size:15px;font-weight:600;color:var(--white);" id="room-detail-title"></div>
+    </div>
+    <div style="padding:16px;">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:12px;">
+        <div id="ap-mem-list"></div>
+      </div>
+      <div class="picked-bar">
+        <div class="pb-title">지목된 참가자 <span style="font-weight:400;color:var(--muted);">(2명 선택)</span></div>
+        <div class="pb-chips" id="ap-picked-chips"><span style="font-size:12px;color:var(--muted);">아직 없음</span></div>
+      </div>
+      <div id="ap-pick-actions">
+        <button class="btn btn-pink" onclick="showTopicArea()">대화 주제 선택하기 →</button>
+        <button class="btn btn-gray" onclick="clearPicked()">선택 초기화</button>
+      </div>
+      <div id="ap-topic-area" style="display:none;">
+        <div class="sec-lbl">대화 주제 카드</div>
+        <div class="topic-display">
+          <div class="td-emoji" id="apt-emoji"></div>
+          <div class="td-cat" id="apt-cat"></div>
+          <div class="td-text" id="apt-text"></div>
+        </div>
+        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="shuffleTopic()">🔀 다른 주제로</button>
+        <div class="sec-lbl">타이머</div>
+        <div class="dur-pills">
+          <button class="dp on" onclick="setDur(3,this)">3분</button>
+          <button class="dp" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
+        </div>
+        <div class="send-banner">
+          <div class="sb-name" id="ap-pair-names"></div>
+          <div class="sb-sub">에게 주제와 타이머가 전송됩니다</div>
+        </div>
+        <button class="btn btn-dark" onclick="sendMatch()">지금 전송하기 →</button>
+        <button class="btn btn-gray" onclick="backTopicToPick()">← 돌아가기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 타이머 진행중 패널 -->
+  <div id="admin-running-panel" style="display:none;position:absolute;inset:0;background:var(--bg);overflow-y:auto;z-index:10;">
+    <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:15px;font-weight:600;color:var(--white);">대화 진행 중</div>
+    </div>
+    <div style="padding:16px;">
+      <div class="topic-display" id="apr-topic"></div>
+      <div class="run-timer">
+        <div class="rt-num" id="ap-timer-num">05:00</div>
+        <div class="rt-lbl">남은 시간</div>
+      </div>
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;" id="ap-pair-lbl"></div>
+      <button class="btn btn-ghost" onclick="stopTimer()">타이머 종료</button>
+    </div>
+  </div>
+</div>
+
 <!-- BACK CONFIRM MODAL -->
 <div id="back-modal">
   <div class="back-box">
@@ -740,6 +844,12 @@ function listenGuests(){
     updateAdminStats();
     renderGuestListAdmin();
     renderPeople();
+    // 관리자 홈 화면도 업데이트
+    if(st.isAdmin){
+      updateAdminHomeStats();
+      renderAdminHomeGuests();
+      renderAdminHomeRooms();
+    }
   });
 }
 
@@ -897,9 +1007,10 @@ function checkPw(){
   const v=document.getElementById('pw-inp').value;
   if(v===ADMIN_PW){
     closePwModal();
-    renderAdminHome();
-    document.getElementById('admin-panel').classList.add('show');
+    st.isAdmin=true;
+    goScreen('s-admin');
     listenGuests();
+    renderAdminHomeScreen();
   }else{
     document.getElementById('pw-error').textContent='비밀번호가 올바르지 않아요';
     document.getElementById('pw-inp').value='';
@@ -909,14 +1020,127 @@ function checkPw(){
 window.openAdmin=openAdmin;window.closePwModal=closePwModal;
 window.togglePwEye=togglePwEye;window.checkPw=checkPw;
 
+// ── ADMIN HOME SCREEN ────────────────────────────
+function renderAdminHomeScreen(){
+  updateAdminHomeStats();
+  renderAdminHomeTimeline();
+  renderAdminHomeGuests();
+  renderAdminHomeRooms();
+}
+
+function updateAdminHomeStats(){
+  const gs=Object.values(st.guests).filter(g=>g.online!==false);
+  document.getElementById('ags-total').textContent=gs.length;
+  document.getElementById('ags-m').textContent=gs.filter(g=>g.gender==='m').length;
+  document.getElementById('ags-f').textContent=gs.filter(g=>g.gender==='f').length;
+  const matched=new Set();
+  Object.values(st.guests).forEach(g=>{
+    if(g.hearts) Object.entries(g.hearts).forEach(([tid,v])=>{
+      if(v&&st.guests[tid]?.hearts?.[g.id]) matched.add([g.id,tid].sort().join('-'));
+    });
+  });
+  document.getElementById('ags-match').textContent=matched.size;
+  // sync code display
+  const cd=document.getElementById('admin-home-code');
+  if(cd) cd.textContent=st.currentCode||'1212';
+}
+
+function renderAdminHomeGuests(){
+  const el=document.getElementById('admin-home-guests');
+  if(!el) return;
+  const online=Object.values(st.guests).filter(g=>g.online!==false);
+  if(!online.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div>';return;}
+  el.innerHTML=online.map(g=>`
+    <div class="guest-row">
+      <div class="av av-${g.gender}" style="width:28px;height:28px;font-size:11px;">${g.nick[0]}</div>
+      <div style="flex:1;">${g.nick}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:3px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);"></div>
+          <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
+        </div>
+        <button onclick="kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderAdminHomeTimeline(){
+  const el=document.getElementById('admin-home-timeline');
+  if(!el) return;
+  el.innerHTML=TIMELINE.map((t,i)=>{
+    const isDone=t.stepIdx<st.currentStep;
+    const isNow=t.stepIdx===st.currentStep;
+    const isNext=t.stepIdx===st.currentStep+1;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const showTimer=isNow&&t.duration>0;
+    return `<div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-dot ${isDone?'done':isNow?'now':''}"></div>
+        ${i<TIMELINE.length-1?'<div class="tl-line"></div>':''}
+      </div>
+      <div class="tl-content">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tl-time">${t.time}</div>
+          ${showTimer?`<div id="step-countdown" style="font-size:13px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;">${fmtTime(st.stepTimerLeft||t.duration)}</div>`:''}
+        </div>
+        <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
+        <div class="tl-desc">${t.desc}</div>
+        ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
+        ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAdminHomeRooms(){
+  const el=document.getElementById('admin-home-rooms');
+  if(!el) return;
+  const gs=Object.values(st.guests).filter(g=>g.online!==false);
+  const assignment=st.currentRoomAssignment||{};
+  el.innerHTML=ROOMS.map(r=>{
+    const roomGs=gs.filter(g=>Object.keys(assignment).length>0?assignment[g.id]===r.name:false);
+    return `<div class="room-list-card" onclick="openRoomDetail(${r.id})">
+      <div class="rlc-name">${r.name} <span style="font-size:11px;color:var(--muted);font-weight:400;">${roomGs.length}명</span></div>
+      <div class="rlc-members">${roomGs.length
+        ?roomGs.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join('')
+        :'<span style="font-size:12px;color:var(--muted);">배정된 게스트 없음</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openRoomDetail(id){
+  st.adminRoom=id;st.adminPicked=[];
+  const room=ROOMS.find(r=>r.id===id);
+  document.getElementById('room-detail-title').textContent=room.name;
+  document.getElementById('ap-pick-actions').style.display='block';
+  document.getElementById('ap-topic-area').style.display='none';
+  document.getElementById('admin-room-detail-panel').style.display='block';
+  renderAdminMembers();
+}
+window.openRoomDetail=openRoomDetail;
+
+function closeRoomDetail(){
+  document.getElementById('admin-room-detail-panel').style.display='none';
+}
+window.closeRoomDetail=closeRoomDetail;
+
+async function changeCodeFromHome(){
+  const v=document.getElementById('admin-home-code-inp').value.trim();
+  if(!v){alert('코드를 입력해주세요');return;}
+  await setDoc(SESSION_REF(),{code:v},{merge:true});
+  st.currentCode=v;
+  document.getElementById('admin-home-code').textContent=v;
+  document.getElementById('admin-home-code-inp').value='';
+  alert('코드가 변경되었어요: '+v);
+}
+window.changeCodeFromHome=changeCodeFromHome;
+
 // ── ADMIN ────────────────────────────────────────
 function closeAdmin(){
   document.getElementById('admin-panel').classList.remove('show');
-  // 현재 활성 화면이 없으면 메인으로
-  const hasActive=document.querySelector('.screen.on');
-  if(!hasActive||document.getElementById('s-code').classList.contains('on')){
-    if(st.myId) goScreen('s-main');
-  }
+  if(st.isAdmin) goScreen('s-admin');
 }
 window.closeAdmin=closeAdmin;
 
