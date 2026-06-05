@@ -227,8 +227,8 @@ textarea{resize:none;line-height:1.5;}
     </div>
     <div class="code-hint">행사장에 부착된 QR을 스캔하면 자동으로 이 화면이 열려요</div>
     <div style="margin-top:auto;">
-      <button class="btn btn-pink" onclick="window.submitCode()">입장하기</button>
-      <button class="btn btn-gray" onclick="window.openAdmin()">관리자로 입장</button>
+      <button class="btn btn-pink" onclick="submitCode()">입장하기</button>
+      <button class="btn btn-gray" onclick="openAdmin()">관리자로 입장</button>
     </div>
   </div>
 </div>
@@ -240,15 +240,15 @@ textarea{resize:none;line-height:1.5;}
     <div class="page-title">안녕하세요 👋</div>
     <div class="page-sub">성별을 선택하고 별명을 입력해주세요</div>
     <div class="gender-row">
-      <div class="g-card" id="gm" onclick="window.pickGender('m')"><div class="gi">👨</div><span>남성</span></div>
-      <div class="g-card" id="gf" onclick="window.pickGender('f')"><div class="gi">👩</div><span>여성</span></div>
+      <div class="g-card" id="gm" onclick="pickGender('m')"><div class="gi">👨</div><span>남성</span></div>
+      <div class="g-card" id="gf" onclick="pickGender('f')"><div class="gi">👩</div><span>여성</span></div>
     </div>
     <div class="field-g">
       <label class="field-lbl">별명</label>
       <input type="text" id="inp-nick" placeholder="ex) 새벽 라면 좋아하는 준호" maxlength="20">
     </div>
     <div style="margin-top:auto;">
-      <button class="btn btn-pink" onclick="window.goToProfile()">다음으로</button>
+      <button class="btn btn-pink" onclick="goToProfile()">다음으로</button>
     </div>
   </div>
 </div>
@@ -261,8 +261,8 @@ textarea{resize:none;line-height:1.5;}
     <div class="page-sub">각 파트에서 랜덤으로 뽑힌 질문이에요 ✨<br>작성 후 뒤로가기로 수정할 수 있어요</div>
     <div id="prof-qs"></div>
     <div style="margin-top:16px;">
-      <button class="btn btn-pink" onclick="window.submitProfile()">프로필 완성!</button>
-      <button class="btn btn-gray" onclick="window.goScreen('s-gender')">← 뒤로가기</button>
+      <button class="btn btn-pink" onclick="submitProfile()">프로필 완성!</button>
+      <button class="btn btn-gray" onclick="goScreen('s-gender')">← 뒤로가기</button>
     </div>
   </div>
 </div>
@@ -284,16 +284,16 @@ textarea{resize:none;line-height:1.5;}
 <div class="screen" id="s-main">
   <div class="top-bar">
     <div class="tb-head">
-      <button onclick="window.openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);font-family:inherit;z-index:1;">
+      <button onclick="openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);font-family:inherit;z-index:1;">
         <span style="font-size:16px;">←</span> 뒤로
       </button>
       <div class="tb-logo">12:12</div>
       <div id="my-status" class="status-pill sp-free"><div class="sdot" style="background:var(--teal);"></div>자유 대화 중</div>
     </div>
     <div class="nav-tabs">
-      <button class="nav-tab on" onclick="window.switchTab('people')">참가자</button>
-      <button class="nav-tab" onclick="window.switchTab('starter')">대화카드</button>
-      <button class="nav-tab" onclick="window.switchTab('me')">내 프로필</button>
+      <button class="nav-tab on" onclick="switchTab('people')">참가자</button>
+      <button class="nav-tab" onclick="switchTab('starter')">대화카드</button>
+      <button class="nav-tab" onclick="switchTab('me')">내 프로필</button>
     </div>
   </div>
   <div class="tab-body on" id="tab-people">
@@ -306,18 +306,18 @@ textarea{resize:none;line-height:1.5;}
   <div class="tab-body" id="tab-starter">
     <div style="font-size:20px;font-weight:700;margin-bottom:6px;">대화 스타터 카드</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:18px;">"이 카드 꺼내도 돼요?" 자체가 시작이에요 😄</div>
-    <button class="draw-btn" onclick="window.drawCard()">🎴  카드 뽑기</button>
+    <button class="draw-btn" onclick="drawCard()">🎴  카드 뽑기</button>
     <div class="card-result" id="card-result">
       <div class="cr-emoji" id="cr-emoji"></div>
       <div class="cr-cat" id="cr-cat"></div>
       <div class="cr-text" id="cr-text"></div>
-      <button class="btn btn-gray" style="margin-top:14px;" onclick="window.drawCard()">다른 카드</button>
+      <button class="btn btn-gray" style="margin-top:14px;" onclick="drawCard()">다른 카드</button>
     </div>
   </div>
   <div class="tab-body" id="tab-me">
     <div id="my-prof-view"></div>
   </div>
-  <button id="admin-fab" onclick="window.openAdmin()">⚙</button>
+  <button id="admin-fab" onclick="openAdmin()">⚙</button>
 </div>
 
 <!-- ADMIN HOME SCREEN -->
@@ -367,7 +367,7 @@ textarea{resize:none;line-height:1.5;}
   <!-- 룸 상세 패널 -->
   <div id="admin-room-detail-panel" style="display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:200;max-width:430px;margin:0 auto;">
     <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
-      <button onclick="window.closeRoomDetail()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;padding:0;">←</button>
+      <button onclick="closeRoomDetail()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;padding:0;">←</button>
       <div style="font-size:15px;font-weight:600;color:var(--white);" id="room-detail-title"></div>
     </div>
     <div style="padding:16px;">
@@ -381,13 +381,13 @@ textarea{resize:none;line-height:1.5;}
       <div id="ap-pick-actions">
         <div class="sec-lbl" style="margin-bottom:8px;">타이머 설정</div>
         <div class="dur-pills" style="justify-content:flex-start;margin-bottom:14px;">
-          <button class="dp" onclick="window.setDur(3,this)">3분</button>
-          <button class="dp on" onclick="window.setDur(5,this)">5분</button>
-          <button class="dp" onclick="window.setDur(7,this)">7분</button>
-          <button class="dp" onclick="window.setDur(10,this)">10분</button>
+          <button class="dp" onclick="setDur(3,this)">3분</button>
+          <button class="dp on" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
         </div>
-        <button class="btn btn-pink" onclick="window.autoPairAndSend()">🎲 자동 페어링 + 주제 전송</button>
-        <button class="btn btn-gray" onclick="window.closeRoomDetail()">← 돌아가기</button>
+        <button class="btn btn-pink" onclick="autoPairAndSend()">🎲 자동 페어링 + 주제 전송</button>
+        <button class="btn btn-gray" onclick="closeRoomDetail()">← 돌아가기</button>
       </div>
       <div id="ap-topic-area" style="display:none;">
         <div class="sec-lbl">대화 주제 카드</div>
@@ -396,20 +396,20 @@ textarea{resize:none;line-height:1.5;}
           <div class="td-cat" id="apt-cat"></div>
           <div class="td-text" id="apt-text"></div>
         </div>
-        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="window.shuffleTopic()">🔀 다른 주제로</button>
+        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="shuffleTopic()">🔀 다른 주제로</button>
         <div class="sec-lbl">타이머</div>
         <div class="dur-pills">
-          <button class="dp on" onclick="window.setDur(3,this)">3분</button>
-          <button class="dp" onclick="window.setDur(5,this)">5분</button>
-          <button class="dp" onclick="window.setDur(7,this)">7분</button>
-          <button class="dp" onclick="window.setDur(10,this)">10분</button>
+          <button class="dp on" onclick="setDur(3,this)">3분</button>
+          <button class="dp" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
         </div>
         <div class="send-banner">
           <div class="sb-name" id="ap-pair-names"></div>
           <div class="sb-sub">에게 주제와 타이머가 전송됩니다</div>
         </div>
-        <button class="btn btn-dark" onclick="window.sendMatch()">지금 전송하기 →</button>
-        <button class="btn btn-gray" onclick="window.backTopicToPick()">← 돌아가기</button>
+        <button class="btn btn-dark" onclick="sendMatch()">지금 전송하기 →</button>
+        <button class="btn btn-gray" onclick="backTopicToPick()">← 돌아가기</button>
       </div>
     </div>
   </div>
@@ -426,7 +426,7 @@ textarea{resize:none;line-height:1.5;}
         <div class="rt-lbl">남은 시간</div>
       </div>
       <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;" id="ap-pair-lbl"></div>
-      <button class="btn btn-ghost" onclick="window.stopTimer()">타이머 종료</button>
+      <button class="btn btn-ghost" onclick="stopTimer()">타이머 종료</button>
     </div>
   </div>
 </div>
@@ -436,8 +436,8 @@ textarea{resize:none;line-height:1.5;}
   <div class="back-box">
     <div class="back-box-msg">이전 화면으로<br>돌아가시겠습니까?</div>
     <div class="back-box-btns">
-      <button class="back-no" onclick="window.closeBackModal()">아니오</button>
-      <button class="back-yes" onclick="window.confirmBack()">예</button>
+      <button class="back-no" onclick="closeBackModal()">아니오</button>
+      <button class="back-yes" onclick="confirmBack()">예</button>
     </div>
   </div>
 </div>
@@ -467,8 +467,8 @@ textarea{resize:none;line-height:1.5;}
     <div id="ov-ended" style="display:none;">
       <div style="text-align:center;font-size:14px;color:var(--muted);margin-bottom:12px;">대화가 끝났어요! 어땠나요?</div>
       <div class="heart-row">
-        <button class="hyes" onclick="window.sendHeart()">💗 호감이에요</button>
-        <button class="hno" onclick="window.closeOverlay()">괜찮아요</button>
+        <button class="hyes" onclick="sendHeart()">💗 호감이에요</button>
+        <button class="hno" onclick="closeOverlay()">괜찮아요</button>
       </div>
     </div>
   </div>
@@ -479,7 +479,7 @@ textarea{resize:none;line-height:1.5;}
   <div class="mc-heart">💗</div>
   <div class="mc-title">매칭이 성사되었어요!</div>
   <div class="mc-sub" id="mc-sub"></div>
-  <button class="btn btn-ghost" style="width:200px;" onclick="window.closeCel()">확인</button>
+  <button class="btn btn-ghost" style="width:200px;" onclick="closeCel()">확인</button>
 </div>
 
 <!-- ADMIN PASSWORD MODAL -->
@@ -489,12 +489,12 @@ textarea{resize:none;line-height:1.5;}
     <div class="pw-sub">관리자 비밀번호를 입력해주세요</div>
     <div class="pw-input-wrap">
       <input type="password" id="pw-inp" placeholder="비밀번호" onkeydown="if(event.key==='Enter')checkPw()">
-      <button class="pw-eye" onclick="window.togglePwEye(this)" type="button">👁</button>
+      <button class="pw-eye" onclick="togglePwEye(this)" type="button">👁</button>
     </div>
     <div class="pw-error" id="pw-error"></div>
     <div class="pw-btns">
-      <button class="pw-cancel" onclick="window.closePwModal()">취소</button>
-      <button class="pw-confirm" onclick="window.checkPw()">확인</button>
+      <button class="pw-cancel" onclick="closePwModal()">취소</button>
+      <button class="pw-confirm" onclick="checkPw()">확인</button>
     </div>
   </div>
 </div>
@@ -506,7 +506,7 @@ textarea{resize:none;line-height:1.5;}
       <div class="admin-title">관리자 <span>패널</span>
         <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px;"><span class="sync-dot live"></span>실시간 연동</span>
       </div>
-      <button class="close-btn" onclick="window.closeAdmin()">닫기</button>
+      <button class="close-btn" onclick="closeAdmin()">닫기</button>
     </div>
 
     <div id="ap-home">
@@ -515,7 +515,7 @@ textarea{resize:none;line-height:1.5;}
         <div class="code-display" id="ap-code-display">1212</div>
         <div style="display:flex;gap:8px;">
           <input type="text" id="ap-code-inp" placeholder="새 코드 입력" style="flex:1;font-size:14px;padding:9px 12px;">
-          <button onclick="window.changeCode()" style="padding:9px 16px;border-radius:10px;border:none;background:var(--pink);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">변경</button>
+          <button onclick="changeCode()" style="padding:9px 16px;border-radius:10px;border:none;background:var(--pink);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">변경</button>
         </div>
       </div>
 
@@ -549,9 +549,9 @@ textarea{resize:none;line-height:1.5;}
         <div class="pb-chips" id="ap-picked-chips"><span style="font-size:12px;color:var(--muted);">아직 없음</span></div>
       </div>
       <div id="ap-pick-actions">
-        <button class="btn btn-pink" onclick="window.showTopicArea()">대화 주제 선택하기 →</button>
-        <button class="btn btn-gray" onclick="window.clearPicked()">선택 초기화</button>
-        <button class="btn btn-gray" onclick="window.backToHome()">← 돌아가기</button>
+        <button class="btn btn-pink" onclick="showTopicArea()">대화 주제 선택하기 →</button>
+        <button class="btn btn-gray" onclick="clearPicked()">선택 초기화</button>
+        <button class="btn btn-gray" onclick="backToHome()">← 돌아가기</button>
       </div>
       <div id="ap-topic-area" style="display:none;">
         <div class="sec-lbl">대화 주제 카드</div>
@@ -560,20 +560,20 @@ textarea{resize:none;line-height:1.5;}
           <div class="td-cat" id="apt-cat"></div>
           <div class="td-text" id="apt-text"></div>
         </div>
-        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="window.shuffleTopic()">🔀 다른 주제로</button>
+        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="shuffleTopic()">🔀 다른 주제로</button>
         <div class="sec-lbl">타이머</div>
         <div class="dur-pills">
-          <button class="dp on" onclick="window.setDur(3,this)">3분</button>
-          <button class="dp" onclick="window.setDur(5,this)">5분</button>
-          <button class="dp" onclick="window.setDur(7,this)">7분</button>
-          <button class="dp" onclick="window.setDur(10,this)">10분</button>
+          <button class="dp on" onclick="setDur(3,this)">3분</button>
+          <button class="dp" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
         </div>
         <div class="send-banner">
           <div class="sb-name" id="ap-pair-names"></div>
           <div class="sb-sub">에게 주제와 타이머가 전송됩니다</div>
         </div>
-        <button class="btn btn-dark" onclick="window.sendMatch()">지금 전송하기 →</button>
-        <button class="btn btn-gray" onclick="window.backTopicToPick()">← 돌아가기</button>
+        <button class="btn btn-dark" onclick="sendMatch()">지금 전송하기 →</button>
+        <button class="btn btn-gray" onclick="backTopicToPick()">← 돌아가기</button>
       </div>
     </div>
 
@@ -585,8 +585,8 @@ textarea{resize:none;line-height:1.5;}
         <div class="rt-lbl">남은 시간</div>
       </div>
       <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;" id="ap-pair-lbl"></div>
-      <button class="btn btn-ghost" onclick="window.stopTimer()">타이머 종료</button>
-      <button class="btn btn-gray" onclick="window.closeAdmin()">패널 닫기</button>
+      <button class="btn btn-ghost" onclick="stopTimer()">타이머 종료</button>
+      <button class="btn btn-gray" onclick="closeAdmin()">패널 닫기</button>
     </div>
   </div>
 </div>
@@ -609,30 +609,6 @@ function cdKey(el,i){
 }
 function getCode(){
   return [0,1,2,3].map(i=>document.getElementById('cd-'+i).value||'').join('');
-}
-
-// 모듈 로드 전 버튼 누를 때 대기하는 안전 래퍼
-function submitCode(){
-  if(window._submitCode) window._submitCode();
-  else setTimeout(submitCode, 100);
-}
-function openAdmin(){
-  if(window._openAdmin) window._openAdmin();
-  else setTimeout(openAdmin, 100);
-}
-function pickGender(g){
-  if(window._pickGender) window._pickGender(g);
-}
-function goToProfile(){
-  if(window._goToProfile) window._goToProfile();
-}
-function goScreen(id){
-  if(window._goScreen) window._goScreen(id);
-  else {
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-    var el=document.getElementById(id);
-    if(el) el.classList.add('on');
-  }
 }
 </script>
 
@@ -732,7 +708,6 @@ const GUESTS_REF=()=>collection(db,'guests');
 // ── UTILS ────────────────────────────────────────
 function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
 function _goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
-window._goScreen=_goScreen;
 function goScreen(id){_goScreen(id);}
 window.goScreen=goScreen;
 function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
@@ -754,7 +729,6 @@ async function submitCode(){
     else alert('코드가 올바르지 않아요');
   }
 }
-window._submitCode=submitCode;
 window.submitCode=submitCode;
 
 // ── GENDER ───────────────────────────────────────
@@ -763,7 +737,6 @@ function pickGender(g){
   document.getElementById('gm').classList.toggle('sel',g==='m');
   document.getElementById('gf').classList.toggle('sel',g==='f');
 }
-window._pickGender=pickGender;
 window.pickGender=pickGender;
 
 function goToProfile(){
@@ -774,7 +747,6 @@ function goToProfile(){
   buildProfile();
   goScreen('s-profile');
 }
-window._goToProfile=goToProfile;
 window.goToProfile=goToProfile;
 
 // ── PROFILE ──────────────────────────────────────
@@ -952,7 +924,7 @@ function renderPeople(){
         <div class="av av-${u.gender}">${u.nick[0]}</div>
         <div><div class="pc-name">${u.nick}</div><div class="pc-meta">${u.gender==='m'?'남성':'여성'}</div></div>
         ${st.heartsEnabled
-          ?`<button class="hb ${st.hearts[u.id]?'on':''}" onclick="window.toggleHeart('${u.id}','${u.nick}',this)">${st.hearts[u.id]?'❤️':'🤍'}</button>`
+          ?`<button class="hb ${st.hearts[u.id]?'on':''}" onclick="toggleHeart('${u.id}','${u.nick}',this)">${st.hearts[u.id]?'❤️':'🤍'}</button>`
           :'<span style="margin-left:auto;font-size:10px;color:var(--muted);text-align:right;">룸 이동 후<br>하트 가능</span>'}
       </div>
       <div class="pc-qa">${Object.values(u.answers||{}).flat().slice(0,4).map(qa=>`<b>${qa.q}</b><br>"${qa.a}"`).join('<br><br>')}</div>
@@ -1061,7 +1033,6 @@ function openAdmin(){
   document.getElementById('pw-modal').classList.add('show');
   setTimeout(()=>document.getElementById('pw-inp').focus(),100);
 }
-window._openAdmin=openAdmin;
 window.openAdmin=openAdmin;
 function closePwModal(){document.getElementById('pw-modal').classList.remove('show');}
 function togglePwEye(btn){
@@ -1125,7 +1096,7 @@ function renderAdminHomeGuests(){
           <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);"></div>
           <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
         </div>
-        <button onclick="window.kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
+        <button onclick="kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
       </div>
     </div>`).join('');
 }
@@ -1152,8 +1123,8 @@ function renderAdminHomeTimeline(){
         </div>
         <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
         <div class="tl-desc">${t.desc}</div>
-        ${canStart?`<button class="start-btn" onclick="window.startStep(${t.stepIdx})">시작</button>`:''}
-        ${canSkip?`<button class="skip-btn" onclick="window.skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
+        ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
+        ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1166,7 +1137,7 @@ function renderAdminHomeRooms(){
   const assignment=st.currentRoomAssignment||{};
   el.innerHTML=ROOMS.map(r=>{
     const roomGs=gs.filter(g=>Object.keys(assignment).length>0?assignment[g.id]===r.name:false);
-    return `<div class="room-list-card" onclick="window.openRoomDetail(${r.id})">
+    return `<div class="room-list-card" onclick="openRoomDetail(${r.id})">
       <div class="rlc-name">${r.name} <span style="font-size:11px;color:var(--muted);font-weight:400;">${roomGs.length}명</span></div>
       <div class="rlc-members">${roomGs.length
         ?roomGs.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join('')
@@ -1286,7 +1257,7 @@ function renderGuestListAdmin(){
           <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);"></div>
           <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
         </div>
-        <button onclick="window.kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
+        <button onclick="kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
       </div>
     </div>`).join('');
 }
@@ -1312,8 +1283,8 @@ function renderAdminTimeline(){
         </div>
         <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
         <div class="tl-desc">${t.desc}</div>
-        ${canStart?`<button class="start-btn" onclick="window.startStep(${t.stepIdx})">시작</button>`:''}
-        ${canSkip?`<button class="skip-btn" onclick="window.skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
+        ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
+        ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1446,7 +1417,7 @@ function renderAdminHome(){
     // 이 룸에 배정된 게스트만 필터
     const roomGuests=gs.filter(g=>assignment[g.id]===r.name);
     return `
-    <div class="room-list-card" onclick="window.selectAdminRoom(${r.id})">
+    <div class="room-list-card" onclick="selectAdminRoom(${r.id})">
       <div class="rlc-name">${r.name} <span class="room-count" style="font-size:11px;color:var(--muted);font-weight:400;">${roomGuests.length}명</span></div>
       <div class="rlc-members">${roomGuests.length
         ? roomGuests.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join('')
@@ -1484,7 +1455,7 @@ function renderAdminMembers(){
     renderPickedBar();return;
   }
   el.innerHTML=gs.map(g=>`
-    <div class="mem-row ${st.adminPicked.find(p=>p.id===g.id)?'picked':''}" onclick="window.togglePick('${g.id}','${g.nick}','${g.gender}')">
+    <div class="mem-row ${st.adminPicked.find(p=>p.id===g.id)?'picked':''}" onclick="togglePick('${g.id}','${g.nick}','${g.gender}')">
       <div class="av av-${g.gender}" style="width:30px;height:30px;font-size:12px;">${g.nick[0]}</div>
       <div style="flex:1;font-size:13px;">${g.nick}</div>
       <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
