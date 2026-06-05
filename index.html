@@ -666,7 +666,7 @@ function listenSession(){
   onSnapshot(SESSION_REF(),(snap)=>{
     if(!snap.exists())return;
     const d=snap.data();
-    if(d.step!==undefined&&d.step>st.currentStep){
+    if(d.step!==undefined&&d.step!==st.currentStep){
       st.currentStep=d.step;
       if(d.step>=3) st.heartsEnabled=true;
       if(document.getElementById('s-wait').classList.contains('on')) goScreen('s-main');
@@ -961,11 +961,11 @@ function renderGuestListAdmin(){
 function renderAdminTimeline(){
   const el=document.getElementById('admin-timeline');
   el.innerHTML=TIMELINE.map((t,i)=>{
-    const isDone=i+1<st.currentStep;
-    const isNow=i+1===st.currentStep;
-    const isNext=i+1===st.currentStep+1;
-    const canStart=isNext&&i>=2&&i<=4; // 다음 단계만 시작 버튼
-    const canSkip=!isDone&&!isNow&&i>=2&&i<=5; // 아직 안 한 단계만 건너뛰기
+    const isDone=t.stepIdx<st.currentStep;
+    const isNow=t.stepIdx===st.currentStep;
+    const isNext=t.stepIdx===st.currentStep+1;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=5;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=5;
     return `<div class="tl-row">
       <div class="tl-left">
         <div class="tl-dot ${isDone?'done':isNow?'now':''}"></div>
@@ -976,7 +976,7 @@ function renderAdminTimeline(){
         <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
         <div class="tl-desc">${t.desc}</div>
         ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
-        ${canSkip&&!isNext?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
+        ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1033,13 +1033,12 @@ function assignRooms(round){
 }
 
 async function startStep(idx){
-  st.currentStep=idx+1;
+  st.currentStep=idx; // idx가 곧 현재 진행중인 단계
   if(idx>=3) st.heartsEnabled=true;
 
   let assignment=null;
-  // 룸 이동 단계(3,4,5)면 배정 실행
   if(idx>=3&&idx<=5){
-    const round=idx-2; // 1,2,3
+    const round=idx-2;
     assignment=assignRooms(round);
   }
 
@@ -1051,7 +1050,6 @@ async function startStep(idx){
 
   renderAdminTimeline();
 
-  // 관리자 화면에 배정 결과 표시
   if(assignment){
     const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
     const summary=roomNames.map(r=>{
@@ -1060,7 +1058,7 @@ async function startStep(idx){
     }).join('\n');
     alert(`룸 배정 완료!\n\n${summary}`);
   } else {
-    alert('단계 '+idx+'가 시작되었어요!');
+    alert('단계가 시작되었어요!');
   }
 }
 window.startStep=startStep;
