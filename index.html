@@ -360,7 +360,7 @@ textarea{resize:none;line-height:1.5;}
   </div>
 
   <!-- 룸 상세 패널 -->
-  <div id="admin-room-detail-panel" style="display:none;position:absolute;inset:0;background:var(--bg);overflow-y:auto;z-index:10;">
+  <div id="admin-room-detail-panel" style="display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:200;max-width:430px;margin:0 auto;">
     <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
       <button onclick="closeRoomDetail()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;padding:0;">←</button>
       <div style="font-size:15px;font-weight:600;color:var(--white);" id="room-detail-title"></div>
@@ -403,7 +403,7 @@ textarea{resize:none;line-height:1.5;}
   </div>
 
   <!-- 타이머 진행중 패널 -->
-  <div id="admin-running-panel" style="display:none;position:absolute;inset:0;background:var(--bg);overflow-y:auto;z-index:10;">
+  <div id="admin-running-panel" style="display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:200;max-width:430px;margin:0 auto;">
     <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
       <div style="font-size:15px;font-weight:600;color:var(--white);">대화 진행 중</div>
     </div>
