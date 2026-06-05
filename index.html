@@ -209,7 +209,7 @@ textarea{resize:none;line-height:1.5;}
     <h1>12:12</h1>
     <div class="sub">Mission: 썸 가능</div>
     <div class="splash-dots"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
-    <button onclick="openAdmin()" style="margin-top:48px;padding:8px 20px;border-radius:99px;border:1px solid #333;background:none;color:#555;font-size:12px;font-family:inherit;cursor:pointer;letter-spacing:.5px;">관리자로 입장</button>
+    <button onclick="if(typeof openAdmin==='function')openAdmin();else alert('잠시 후 다시 시도해주세요')" style="margin-top:48px;padding:8px 20px;border-radius:99px;border:1px solid #333;background:none;color:#555;font-size:12px;font-family:inherit;cursor:pointer;letter-spacing:.5px;">관리자로 입장</button>
   </div>
 </div>
 
@@ -672,7 +672,7 @@ function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s
 function uid(){return Math.random().toString(36).slice(2,10);}
 
 // ── SPLASH ───────────────────────────────────────
-setTimeout(()=>goScreen('s-code'),1800);
+setTimeout(()=>goScreen('s-code'), 800);
 
 // ── CODE INPUT ───────────────────────────────────
 (function buildCode(){
