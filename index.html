@@ -810,7 +810,7 @@ window.submitProfile=submitProfile;
 // ── REALTIME LISTENERS ───────────────────────────
 function listenSession(){
   onSnapshot(SESSION_REF(),(snap)=>{
-    if(!snap.exists())return;
+    if(!snap.exists)return;
     const d=snap.data();
     if(d.step!==undefined&&d.step!==st.currentStep){
       st.currentStep=d.step;
@@ -852,7 +852,7 @@ function listenMyDoc(){
   if(!st.myId)return;
   onSnapshot(doc(db,'guests',st.myId),(snap)=>{
     // 문서가 삭제되면 강퇴된 것
-    if(!snap.exists()){
+    if(!snap.exists){
       clearInterval(st.heartbeatInt);
       clearInterval(st.timerInt);
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
@@ -947,7 +947,7 @@ async function toggleHeart(targetId,targetNick,btn){
     const hearts={...((await getDoc(myRef)).data()?.hearts||{}),[targetId]:st.hearts[targetId]};
     await updateDoc(myRef,{hearts});
     const targetSnap=await getDoc(doc(db,'guests',targetId));
-    if(targetSnap.exists()&&targetSnap.data().hearts?.[st.myId]&&st.hearts[targetId]){
+    if(targetSnap.exists&&targetSnap.data().hearts?.[st.myId]&&st.hearts[targetId]){
       const b=document.getElementById('match-banner');
       document.getElementById('mb-sub').textContent=targetNick+'님과 매칭됐어요! 프리토킹 때 알림이 가요 😊';
       b.classList.add('show');
