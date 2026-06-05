@@ -538,9 +538,9 @@ const ROOMS=[
 const TIMELINE=[
   {time:"0:00~0:10",step:"입장 & 앱 세팅",desc:"QR 입장, 프로필 작성",state:"done",stepIdx:1},
   {time:"0:10~0:20",step:"게임 설명",desc:"진행 방식 안내",state:"now",stepIdx:2},
-  {time:"0:20~0:40",step:"FUNWAY STORE",desc:"1차 룸 이동",state:"",stepIdx:3},
-  {time:"0:40~1:00",step:"Class ROOM 1",desc:"2차 룸 이동",state:"",stepIdx:4},
-  {time:"1:00~1:20",step:"Class ROOM 2",desc:"3차 룸 이동",state:"",stepIdx:5},
+  {time:"0:20~0:40",step:"1차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:3},
+  {time:"0:40~1:00",step:"2차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:4},
+  {time:"1:00~1:20",step:"3차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:5},
   {time:"1:20~1:40",step:"프리토킹",desc:"전체 모여서 자유 대화 + 매칭 알림",state:"",stepIdx:6}
 ];
 
@@ -687,18 +687,15 @@ function listenSession(){
 }
 
 function showRoomAssignment(roomName){
-  // 기존 룸 알림 제거
   const existing=document.getElementById('room-assign-banner');
   if(existing) existing.remove();
-
   const banner=document.createElement('div');
   banner.id='room-assign-banner';
   banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:500;max-width:430px;margin:0 auto;';
   banner.innerHTML=`
-    <div style="background:var(--pink);color:#fff;padding:16px 20px;text-align:center;animation:slideDown .3s ease;">
-      <div style="font-size:12px;font-weight:500;opacity:.8;margin-bottom:4px;">지금 이동할 룸</div>
-      <div style="font-size:20px;font-weight:700;">${roomName}</div>
-      <button onclick="document.getElementById('room-assign-banner').remove()" style="margin-top:10px;padding:6px 16px;border-radius:99px;border:1.5px solid rgba(255,255,255,.5);background:none;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">확인</button>
+    <div style="background:var(--pink);color:#fff;padding:20px 24px;text-align:center;animation:slideDown .3s ease;">
+      <div style="font-size:12px;font-weight:500;opacity:.8;margin-bottom:6px;">📍 지금 이동할 룸</div>
+      <div style="font-size:24px;font-weight:700;">${roomName}</div>
     </div>`;
   document.body.appendChild(banner);
 }
