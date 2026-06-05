@@ -910,7 +910,14 @@ window.openAdmin=openAdmin;window.closePwModal=closePwModal;
 window.togglePwEye=togglePwEye;window.checkPw=checkPw;
 
 // ── ADMIN ────────────────────────────────────────
-function closeAdmin(){document.getElementById('admin-panel').classList.remove('show');}
+function closeAdmin(){
+  document.getElementById('admin-panel').classList.remove('show');
+  // 현재 활성 화면이 없으면 메인으로
+  const hasActive=document.querySelector('.screen.on');
+  if(!hasActive||document.getElementById('s-code').classList.contains('on')){
+    if(st.myId) goScreen('s-main');
+  }
+}
 window.closeAdmin=closeAdmin;
 
 async function changeCode(){
@@ -1139,9 +1146,19 @@ function selectAdminRoom(id){
 window.selectAdminRoom=selectAdminRoom;
 
 function renderAdminMembers(){
-  const gs=Object.values(st.guests);
+  const assignment=st.currentRoomAssignment||{};
+  const room=ROOMS.find(r=>r.id===st.adminRoom);
+  // 배정된 게스트만 필터, 배정 전이면 전체 게스트 표시
+  const allGs=Object.values(st.guests).filter(g=>g.online!==false);
+  const hasAssignment=Object.keys(assignment).length>0;
+  const gs=hasAssignment
+    ? allGs.filter(g=>assignment[g.id]===room?.name)
+    : allGs;
   const el=document.getElementById('ap-mem-list');
-  if(!gs.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:10px;">아직 입장한 게스트가 없어요</div>';renderPickedBar();return;}
+  if(!gs.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--muted);padding:10px;">${hasAssignment?'이 룸에 배정된 게스트가 없어요':'아직 입장한 게스트가 없어요'}</div>`;
+    renderPickedBar();return;
+  }
   el.innerHTML=gs.map(g=>`
     <div class="mem-row ${st.adminPicked.find(p=>p.id===g.id)?'picked':''}" onclick="togglePick('${g.id}','${g.nick}','${g.gender}')">
       <div class="av av-${g.gender}" style="width:30px;height:30px;font-size:12px;">${g.nick[0]}</div>
