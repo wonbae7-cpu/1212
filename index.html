@@ -536,12 +536,12 @@ const ROOMS=[
   {id:3,name:"Class ROOM 2",step:5}
 ];
 const TIMELINE=[
-  {time:"0:00~0:10",step:"입장 & 앱 세팅",desc:"QR 입장, 프로필 작성",state:"done",stepIdx:1},
-  {time:"0:10~0:20",step:"게임 설명",desc:"진행 방식 안내",state:"now",stepIdx:2},
-  {time:"0:20~0:40",step:"1차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:3},
-  {time:"0:40~1:00",step:"2차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:4},
-  {time:"1:00~1:20",step:"3차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:5},
-  {time:"1:20~1:40",step:"프리토킹",desc:"전체 모여서 자유 대화 + 매칭 알림",state:"",stepIdx:6}
+  {time:"0:00~0:10",step:"입장 & 앱 세팅",desc:"QR 입장, 프로필 작성",state:"done",stepIdx:1,duration:0},
+  {time:"0:10~0:20",step:"게임 설명",desc:"진행 방식 안내",state:"now",stepIdx:2,duration:0},
+  {time:"0:20~0:40",step:"1차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:3,duration:20*60},
+  {time:"0:40~1:00",step:"2차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:4,duration:20*60},
+  {time:"1:00~1:20",step:"3차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:5,duration:20*60},
+  {time:"1:20~1:50",step:"프리토킹",desc:"전체 모여서 자유 대화 + 매칭 알림",state:"",stepIdx:6,duration:30*60}
 ];
 
 // ── STATE ────────────────────────────────────────
@@ -549,7 +549,8 @@ let st={
   gender:null,nick:"",myId:null,answers:{},myQs:{},
   hearts:{},timerInt:null,timerLeft:0,
   adminRoom:null,adminPicked:[],adminDur:5,adminTopic:null,
-  currentStep:2,heartsEnabled:false,guests:{},matches:{}
+  currentStep:2,heartsEnabled:false,guests:{},matches:{},
+  stepTimerInt:null,stepTimerLeft:0
 };
 const ADMIN_PW='1212admin';
 const SESSION_REF=()=>doc(db,'session','current');
@@ -964,15 +965,19 @@ function renderAdminTimeline(){
     const isDone=t.stepIdx<st.currentStep;
     const isNow=t.stepIdx===st.currentStep;
     const isNext=t.stepIdx===st.currentStep+1;
-    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=5;
-    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=5;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const showTimer=isNow&&t.duration>0;
     return `<div class="tl-row">
       <div class="tl-left">
         <div class="tl-dot ${isDone?'done':isNow?'now':''}"></div>
         ${i<TIMELINE.length-1?'<div class="tl-line"></div>':''}
       </div>
       <div class="tl-content">
-        <div class="tl-time">${t.time}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tl-time">${t.time}</div>
+          ${showTimer?`<div id="step-countdown" style="font-size:13px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;">${fmtTime(st.stepTimerLeft||t.duration)}</div>`:''}
+        </div>
         <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
         <div class="tl-desc">${t.desc}</div>
         ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
@@ -980,6 +985,20 @@ function renderAdminTimeline(){
       </div>
     </div>`;
   }).join('');
+}
+
+function startStepTimer(duration){
+  clearInterval(st.stepTimerInt);
+  st.stepTimerLeft=duration;
+  st.stepTimerInt=setInterval(()=>{
+    st.stepTimerLeft--;
+    const el=document.getElementById('step-countdown');
+    if(el) el.textContent=fmtTime(st.stepTimerLeft);
+    if(st.stepTimerLeft<=0){
+      clearInterval(st.stepTimerInt);
+      if(el) el.textContent='00:00';
+    }
+  },1000);
 }
 
 // ── 랜덤 룸 배정 알고리즘 ─────────────────────────
@@ -1033,8 +1052,12 @@ function assignRooms(round){
 }
 
 async function startStep(idx){
-  st.currentStep=idx; // idx가 곧 현재 진행중인 단계
+  st.currentStep=idx;
   if(idx>=3) st.heartsEnabled=true;
+
+  // 해당 단계 타이머 시작
+  const tl=TIMELINE.find(t=>t.stepIdx===idx);
+  if(tl&&tl.duration>0) startStepTimer(tl.duration);
 
   let assignment=null;
   if(idx>=3&&idx<=5){
@@ -1044,6 +1067,7 @@ async function startStep(idx){
 
   await setDoc(SESSION_REF(),{
     step:idx,
+    stepStartedAt:serverTimestamp(),
     ...(assignment?{roomAssignment:assignment}:{}),
     ...(st.roomHistory?{roomHistory:st.roomHistory}:{})
   },{merge:true});
