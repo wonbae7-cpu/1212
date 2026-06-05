@@ -610,6 +610,30 @@ function cdKey(el,i){
 function getCode(){
   return [0,1,2,3].map(i=>document.getElementById('cd-'+i).value||'').join('');
 }
+
+// 모듈 로드 전 버튼 누를 때 대기하는 안전 래퍼
+function submitCode(){
+  if(window._submitCode) window._submitCode();
+  else setTimeout(submitCode, 100);
+}
+function openAdmin(){
+  if(window._openAdmin) window._openAdmin();
+  else setTimeout(openAdmin, 100);
+}
+function pickGender(g){
+  if(window._pickGender) window._pickGender(g);
+}
+function goToProfile(){
+  if(window._goToProfile) window._goToProfile();
+}
+function goScreen(id){
+  if(window._goScreen) window._goScreen(id);
+  else {
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+    var el=document.getElementById(id);
+    if(el) el.classList.add('on');
+  }
+}
 </script>
 
 <script type="module">
@@ -691,7 +715,10 @@ const GUESTS_REF=()=>collection(db,'guests');
 
 // ── UTILS ────────────────────────────────────────
 function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
-function goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function _goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+window._goScreen=_goScreen;
+function goScreen(id){_goScreen(id);}
+window.goScreen=goScreen;
 function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function uid(){return Math.random().toString(36).slice(2,10);}
 
@@ -710,6 +737,8 @@ async function submitCode(){
     else{alert('코드가 올바르지 않아요');}
   }
 }
+window._submitCode=submitCode;
+window.submitCode=submitCode;
 
 // ── GENDER ───────────────────────────────────────
 function pickGender(g){
@@ -717,6 +746,7 @@ function pickGender(g){
   document.getElementById('gm').classList.toggle('sel',g==='m');
   document.getElementById('gf').classList.toggle('sel',g==='f');
 }
+window._pickGender=pickGender;
 window.pickGender=pickGender;
 
 function goToProfile(){
@@ -727,6 +757,7 @@ function goToProfile(){
   buildProfile();
   goScreen('s-profile');
 }
+window._goToProfile=goToProfile;
 window.goToProfile=goToProfile;
 
 // ── PROFILE ──────────────────────────────────────
@@ -1013,6 +1044,8 @@ function openAdmin(){
   document.getElementById('pw-modal').classList.add('show');
   setTimeout(()=>document.getElementById('pw-inp').focus(),100);
 }
+window._openAdmin=openAdmin;
+window.openAdmin=openAdmin;
 function closePwModal(){document.getElementById('pw-modal').classList.remove('show');}
 function togglePwEye(btn){
   const inp=document.getElementById('pw-inp');
