@@ -674,9 +674,11 @@ function listenSession(){
       renderPeople();
     }
     // 룸 배정 정보 수신
-    if(d.roomAssignment&&st.myId&&d.roomAssignment[st.myId]){
-      const myRoom=d.roomAssignment[st.myId];
-      showRoomAssignment(myRoom);
+    if(d.roomAssignment){
+      st.currentRoomAssignment=d.roomAssignment;
+      if(st.myId&&d.roomAssignment[st.myId]){
+        showRoomAssignment(d.roomAssignment[st.myId]);
+      }
     }
     if(d.code){document.getElementById('ap-code-display').textContent=d.code;}
     if(d.matchReveal&&st.myId&&d.matchReveal[st.myId]){
@@ -1063,6 +1065,7 @@ async function startStep(idx){
   if(idx>=3&&idx<=5){
     const round=idx-2;
     assignment=assignRooms(round);
+    st.currentRoomAssignment=assignment; // 룸 관리 표시용
   }
 
   await setDoc(SESSION_REF(),{
@@ -1105,12 +1108,21 @@ function renderAdminHome(){
   updateAdminStats();
   renderAdminTimeline();
   const el=document.getElementById('ap-room-list');
-  const gs=Object.values(st.guests);
-  el.innerHTML=ROOMS.map(r=>`
+  const gs=Object.values(st.guests).filter(g=>g.online!==false);
+  const assignment=st.currentRoomAssignment||{};
+
+  el.innerHTML=ROOMS.map(r=>{
+    // 이 룸에 배정된 게스트만 필터
+    const roomGuests=gs.filter(g=>assignment[g.id]===r.name);
+    return `
     <div class="room-list-card" onclick="selectAdminRoom(${r.id})">
-      <div class="rlc-name">${r.name}</div>
-      <div class="rlc-members">${gs.length?gs.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join(''):'<span style="font-size:12px;color:var(--muted);">게스트를 기다리는 중...</span>'}</div>
-    </div>`).join('');
+      <div class="rlc-name">${r.name} <span class="room-count" style="font-size:11px;color:var(--muted);font-weight:400;">${roomGuests.length}명</span></div>
+      <div class="rlc-members">${roomGuests.length
+        ? roomGuests.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join('')
+        : '<span style="font-size:12px;color:var(--muted);">배정된 게스트 없음</span>'}
+      </div>
+    </div>`;
+  }).join('');
 }
 window.renderAdminHome=renderAdminHome;
 
