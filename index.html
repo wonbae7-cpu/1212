@@ -636,11 +636,10 @@ function goScreen(id){
 }
 </script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-// ── FIREBASE CONFIG ──────────────────────────────
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyA934Dry-AFx1IdwxspE816j3-Vu9gwEVU",
   authDomain: "wr1-meeting-a8b4c.firebaseapp.com",
@@ -648,8 +647,25 @@ const firebaseConfig = {
   messagingSenderId: "405688652128",
   appId: "1:405688652128:web:0123f4055ae35835874e05"
 };
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function doc(db, ...args){
+  let ref = db;
+  for(let i=0; i<args.length; i+=2){
+    ref = ref.collection(args[i]).doc(args[i+1]);
+  }
+  return ref;
+}
+function collection(db, name){ return db.collection(name); }
+async function setDoc(ref, data, opts){ if(opts&&opts.merge) return ref.set(data,{merge:true}); return ref.set(data); }
+async function getDoc(ref){ return ref.get(); }
+async function updateDoc(ref, data){ return ref.update(data); }
+async function deleteDoc(ref){ return ref.delete(); }
+function serverTimestamp(){ return firebase.firestore.FieldValue.serverTimestamp(); }
+function onSnapshot(ref, cb){ return ref.onSnapshot(cb); }
+function query(ref, ...args){ let q=ref; args.forEach(a=>{ if(a._type==='orderBy') q=q.orderBy(a.field,a.dir); }); return q; }
+function orderBy(field, dir='asc'){ return {_type:'orderBy', field, dir}; }
 
 // ── 연결 테스트 ──────────────────────────────────
 async function testConnection(){
@@ -733,8 +749,9 @@ async function submitCode(){
     if(c!==code){alert('코드가 올바르지 않아요');return;}
     goScreen('s-gender');
   }catch(e){
-    if(c==='1212'){goScreen('s-gender');}
-    else{alert('코드가 올바르지 않아요');}
+    // Firebase 오류시 기본코드 1212로 비교
+    if(c==='1212') goScreen('s-gender');
+    else alert('코드가 올바르지 않아요');
   }
 }
 window._submitCode=submitCode;
