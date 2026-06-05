@@ -1559,7 +1559,8 @@ async function autoPairAndSend(){
   document.getElementById('admin-running-panel').style.display='block';
 }
 window.autoPairAndSend=autoPairAndSend;
-  // 관리자 홈 화면 기준으로 패널 전환
+
+async function sendMatch(){
   const isAdminHome=document.getElementById('s-admin').classList.contains('on');
   if(isAdminHome){
     document.getElementById('admin-room-detail-panel').style.display='none';
