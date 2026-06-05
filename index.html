@@ -637,12 +637,19 @@ async function submitProfile(){
       id:st.myId,nick:st.nick,gender:st.gender,
       answers:st.answers,hearts:{},matchedWith:null,
       online:true,
+      lastSeen:serverTimestamp(),
       joinedAt:serverTimestamp()
     });
+    // ── 하트비트: 10초마다 lastSeen 갱신 ──
+    st.heartbeatInt=setInterval(async()=>{
+      try{
+        await updateDoc(doc(db,'guests',st.myId),{lastSeen:serverTimestamp(),online:true});
+      }catch(e){}
+    },10000);
     // 창 닫을 때 offline 표시
     window.addEventListener('beforeunload',()=>{
-      navigator.sendBeacon&&navigator.sendBeacon('/beacon');
-      updateDoc(doc(db,'guests',st.myId),{online:false}).catch(()=>{});
+      clearInterval(st.heartbeatInt);
+      updateDoc(doc(db,'guests',st.myId),{online:false,lastSeen:serverTimestamp()}).catch(()=>{});
     });
   }catch(e){console.log('Firestore write error',e);}
   document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
@@ -688,7 +695,14 @@ function listenMyDoc(){
 function listenGuests(){
   onSnapshot(query(GUESTS_REF(),orderBy('joinedAt')),(snap)=>{
     st.guests={};
-    snap.forEach(d=>{st.guests[d.id]=d.data();});
+    const now=Date.now();
+    snap.forEach(d=>{
+      const data=d.data();
+      // lastSeen 기준 30초 이상 지나면 오프라인 처리
+      const lastSeen=data.lastSeen?.toMillis?.()|| now;
+      const isOnline=data.online!==false&&(now-lastSeen)<30000;
+      st.guests[d.id]={...data,online:isOnline};
+    });
     updateAdminStats();
     renderGuestListAdmin();
     renderPeople();
@@ -867,18 +881,15 @@ window.changeCode=changeCode;
 
 function updateAdminStats(){
   const gs=Object.values(st.guests);
-  const total=gs.length;
-  const male=gs.filter(g=>g.gender==='m').length;
-  const female=gs.filter(g=>g.gender==='f').length;
-  document.getElementById('gs-total').textContent=total;
-  document.getElementById('gs-m').textContent=male;
-  document.getElementById('gs-f').textContent=female;
-  // 매칭 카운트: 서로 하트 보낸 쌍
+  const online=gs.filter(g=>g.online!==false);
+  document.getElementById('gs-total').textContent=online.length;
+  document.getElementById('gs-m').textContent=online.filter(g=>g.gender==='m').length;
+  document.getElementById('gs-f').textContent=online.filter(g=>g.gender==='f').length;
   const matched=new Set();
   gs.forEach(g=>{
     if(g.hearts){
       Object.entries(g.hearts).forEach(([tid,v])=>{
-        if(v && st.guests[tid]?.hearts?.[g.id]){
+        if(v&&st.guests[tid]?.hearts?.[g.id]){
           const pair=[g.id,tid].sort().join('-');
           matched.add(pair);
         }
