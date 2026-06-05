@@ -597,7 +597,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyA934Dry-AFx1IdwxspE816j3-Vu9gwEVU",
   authDomain: "wr1-meeting-a8b4c.firebaseapp.com",
   projectId: "wr1-meeting-a8b4c",
-  storageBucket: "wr1-meeting-a8b4c.firebasestorage.app",
   messagingSenderId: "405688652128",
   appId: "1:405688652128:web:0123f4055ae35835874e05"
 };
@@ -611,12 +610,11 @@ async function testConnection(){
     console.log('✅ Firebase 연결 성공');
     document.querySelectorAll('.sync-dot').forEach(d=>d.classList.add('live'));
   }catch(e){
-    console.error('❌ Firebase 연결 실패:', e);
-    document.querySelectorAll('.sync-dot').forEach(d=>{d.style.background='#E24B4A';d.classList.remove('live');});
-    alert('Firebase 연결에 실패했어요. 콘솔(F12)을 확인해주세요.\n오류: '+e.message);
+    console.warn('Firebase 연결 경고:', e.message);
+    // 연결 실패해도 앱은 계속 진행
   }
 }
-testConnection();
+testConnection(); // 비동기로 실행, 앱 진행을 막지 않음
 
 // ── DATA ─────────────────────────────────────────
 const QUESTIONS={
