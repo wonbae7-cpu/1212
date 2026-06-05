@@ -197,6 +197,7 @@ textarea{resize:none;line-height:1.5;}
 .guest-row:last-child{border-bottom:none;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
 .fade{animation:fadeUp .25s ease both;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:none;}}
 </style>
 </head>
 <body>
@@ -667,9 +668,14 @@ function listenSession(){
     const d=snap.data();
     if(d.step!==undefined&&d.step>st.currentStep){
       st.currentStep=d.step;
-      if(d.step>=3)st.heartsEnabled=true;
-      if(document.getElementById('s-wait').classList.contains('on'))goScreen('s-main');
+      if(d.step>=3) st.heartsEnabled=true;
+      if(document.getElementById('s-wait').classList.contains('on')) goScreen('s-main');
       renderPeople();
+    }
+    // 룸 배정 정보 수신
+    if(d.roomAssignment&&st.myId&&d.roomAssignment[st.myId]){
+      const myRoom=d.roomAssignment[st.myId];
+      showRoomAssignment(myRoom);
     }
     if(d.code){document.getElementById('ap-code-display').textContent=d.code;}
     if(d.matchReveal&&st.myId&&d.matchReveal[st.myId]){
@@ -678,6 +684,23 @@ function listenSession(){
       document.getElementById('match-cel').classList.add('show');
     }
   });
+}
+
+function showRoomAssignment(roomName){
+  // 기존 룸 알림 제거
+  const existing=document.getElementById('room-assign-banner');
+  if(existing) existing.remove();
+
+  const banner=document.createElement('div');
+  banner.id='room-assign-banner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:500;max-width:430px;margin:0 auto;';
+  banner.innerHTML=`
+    <div style="background:var(--pink);color:#fff;padding:16px 20px;text-align:center;animation:slideDown .3s ease;">
+      <div style="font-size:12px;font-weight:500;opacity:.8;margin-bottom:4px;">지금 이동할 룸</div>
+      <div style="font-size:20px;font-weight:700;">${roomName}</div>
+      <button onclick="document.getElementById('room-assign-banner').remove()" style="margin-top:10px;padding:6px 16px;border-radius:99px;border:1.5px solid rgba(255,255,255,.5);background:none;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">확인</button>
+    </div>`;
+  document.body.appendChild(banner);
 }
 
 function listenMyDoc(){
@@ -960,19 +983,93 @@ function renderAdminTimeline(){
   }).join('');
 }
 
+// ── 랜덤 룸 배정 알고리즘 ─────────────────────────
+function assignRooms(round){
+  // round: 1,2,3
+  const guests=Object.values(st.guests).filter(g=>g.online!==false);
+  const males=shuffle(guests.filter(g=>g.gender==='m'));
+  const females=shuffle(guests.filter(g=>g.gender==='f'));
+  const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
+  const assignment={}; // {guestId: roomName}
+
+  // 이전 라운드 배정 이력 가져오기
+  const prevAssignments=st.roomHistory||{}; // {guestId: [room1, room2, ...]}
+
+  // 각 참가자에게 아직 안 간 룸 중에서 배정
+  // 남/여 각각 룸별로 균등하게 나눔
+  const roomSlots={};
+  roomNames.forEach(r=>roomSlots[r]={m:[],f:[]});
+
+  function getBestRoom(guest, gender){
+    const visited=(prevAssignments[guest.id]||[]);
+    // 안 간 룸 우선
+    let candidates=roomNames.filter(r=>!visited.includes(r));
+    if(!candidates.length) candidates=[...roomNames]; // 다 갔으면 전체에서
+    // 이미 만난 사람 적은 룸 우선 선택
+    candidates.sort((a,b)=>{
+      const metInA=roomSlots[a][gender==='m'?'f':'m'].filter(id=>(prevAssignments[guest.id]||[]).includes(id)).length;
+      const metInB=roomSlots[b][gender==='m'?'f':'m'].filter(id=>(prevAssignments[guest.id]||[]).includes(id)).length;
+      // 인원 적은 룸 우선, 그 다음 안 만난 사람 많은 룸
+      const sizeA=roomSlots[a][gender].length;
+      const sizeB=roomSlots[b][gender].length;
+      return sizeA-sizeB || metInA-metInB;
+    });
+    return candidates[0];
+  }
+
+  [...males,...females].forEach(g=>{
+    const room=getBestRoom(g,g.gender);
+    roomSlots[room][g.gender].push(g.id);
+    assignment[g.id]=room;
+  });
+
+  // 히스토리 업데이트
+  if(!st.roomHistory) st.roomHistory={};
+  Object.entries(assignment).forEach(([id,room])=>{
+    if(!st.roomHistory[id]) st.roomHistory[id]=[];
+    st.roomHistory[id].push(room);
+  });
+
+  return assignment;
+}
+
 async function startStep(idx){
   st.currentStep=idx+1;
-  if(idx>=3)st.heartsEnabled=true;
-  await setDoc(SESSION_REF(),{step:idx},{merge:true});
+  if(idx>=3) st.heartsEnabled=true;
+
+  let assignment=null;
+  // 룸 이동 단계(3,4,5)면 배정 실행
+  if(idx>=3&&idx<=5){
+    const round=idx-2; // 1,2,3
+    assignment=assignRooms(round);
+  }
+
+  await setDoc(SESSION_REF(),{
+    step:idx,
+    ...(assignment?{roomAssignment:assignment}:{}),
+    ...(st.roomHistory?{roomHistory:st.roomHistory}:{})
+  },{merge:true});
+
   renderAdminTimeline();
-  alert('단계 '+idx+'가 시작되었어요!');
+
+  // 관리자 화면에 배정 결과 표시
+  if(assignment){
+    const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
+    const summary=roomNames.map(r=>{
+      const members=Object.entries(assignment).filter(([,room])=>room===r).map(([id])=>st.guests[id]?.nick||id);
+      return `${r}: ${members.join(', ')||'없음'}`;
+    }).join('\n');
+    alert(`룸 배정 완료!\n\n${summary}`);
+  } else {
+    alert('단계 '+idx+'가 시작되었어요!');
+  }
 }
 window.startStep=startStep;
 
 async function skipToStep(idx){
   if(confirm('이 단계로 건너뛸까요?')){
     st.currentStep=idx;
-    if(idx>3)st.heartsEnabled=true;
+    if(idx>3) st.heartsEnabled=true;
     await setDoc(SESSION_REF(),{step:idx},{merge:true});
     renderAdminTimeline();
   }
