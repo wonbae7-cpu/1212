@@ -219,7 +219,12 @@ textarea{resize:none;line-height:1.5;}
     <div class="step-bar"><div class="step-seg on"></div><div class="step-seg"></div><div class="step-seg"></div><div class="step-seg"></div></div>
     <div class="page-title">입장 코드 입력</div>
     <div class="page-sub">관리자가 배포한 4자리 코드를 입력해주세요</div>
-    <div class="code-grid" id="code-grid"></div>
+    <div class="code-grid">
+      <input type="text" class="code-digit" id="cd-0" maxlength="1" inputmode="numeric" oninput="cdInput(this,0)" onkeydown="cdKey(this,0)">
+      <input type="text" class="code-digit" id="cd-1" maxlength="1" inputmode="numeric" oninput="cdInput(this,1)" onkeydown="cdKey(this,1)">
+      <input type="text" class="code-digit" id="cd-2" maxlength="1" inputmode="numeric" oninput="cdInput(this,2)" onkeydown="cdKey(this,2)">
+      <input type="text" class="code-digit" id="cd-3" maxlength="1" inputmode="numeric" oninput="cdInput(this,3)" onkeydown="cdKey(this,3)">
+    </div>
     <div class="code-hint">행사장에 부착된 QR을 스캔하면 자동으로 이 화면이 열려요</div>
     <div style="margin-top:auto;">
       <button class="btn btn-pink" onclick="submitCode()">입장하기</button>
@@ -595,6 +600,16 @@ setTimeout(function(){
   var sc=document.getElementById('s-code');
   if(sc) sc.classList.add('on');
 }, 1800);
+
+function cdInput(el,i){
+  if(el.value&&i<3) document.getElementById('cd-'+(i+1)).focus();
+}
+function cdKey(el,i){
+  if(event.key==='Backspace'&&!el.value&&i>0) document.getElementById('cd-'+(i-1)).focus();
+}
+function getCode(){
+  return [0,1,2,3].map(i=>document.getElementById('cd-'+i).value||'').join('');
+}
 </script>
 
 <script type="module">
@@ -681,19 +696,9 @@ function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s
 function uid(){return Math.random().toString(36).slice(2,10);}
 
 // ── CODE INPUT ───────────────────────────────────
-(function buildCode(){
-  const g=document.getElementById('code-grid');
-  for(let i=0;i<4;i++){
-    const inp=document.createElement('input');
-    inp.type='text';inp.maxLength=1;inp.className='code-digit';inp.dataset.i=i;
-    inp.addEventListener('input',e=>{if(e.target.value&&i<3)g.children[i+1].focus();});
-    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!e.target.value&&i>0)g.children[i-1].focus();});
-    g.appendChild(inp);
-  }
-})();
 
 async function submitCode(){
-  const c=Array.from(document.getElementById('code-grid').children).map(i=>i.value||'').join('');
+  const c=getCode();
   if(c.length<4){alert('4자리 코드를 입력해주세요');return;}
   try{
     const snap=await getDoc(SESSION_REF());
