@@ -717,16 +717,21 @@ function uid(){return Math.random().toString(36).slice(2,10);}
 
 async function submitCode(){
   const c=getCode();
-  if(c.length<4){alert('4자리 코드를 입력해주세요');return;}
+  console.log('입력된 코드:', c, '길이:', c.length);
+  if(c.length<4){alert('4자리 코드를 입력해주세요. 현재: '+c);return;}
   try{
     const snap=await getDoc(SESSION_REF());
-    const code=snap.exists()?snap.data().code:'1212';
-    if(c!==code){alert('코드가 올바르지 않아요');return;}
-    goScreen('s-gender');
+    const code=(snap.exists&&snap.data()&&snap.data().code)||'1212';
+    console.log('Firebase 코드:', code);
+    if(c===code){
+      goScreen('s-gender');
+    } else {
+      alert('코드가 올바르지 않아요.\n입력: '+c+'\n정답: '+code);
+    }
   }catch(e){
-    // Firebase 오류시 기본코드 1212로 비교
+    console.error('submitCode error:',e);
     if(c==='1212') goScreen('s-gender');
-    else alert('코드가 올바르지 않아요');
+    else alert('코드 확인 실패.\n기본코드는 1212입니다.\n입력된 코드: '+c);
   }
 }
 window.submitCode=submitCode;
