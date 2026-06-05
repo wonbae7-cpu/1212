@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>12:12 — Mission: 썸 가능</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pink:#D4537E;--pink2:#F4C0D1;--pink3:#FBEAF0;--pink4:#72243E;
+  --blue:#378ADD;--blue2:#B5D4F4;--blue3:#E6F1FB;--blue4:#0C447C;
+  --teal:#1D9E75;--teal2:#E1F5EE;
+  --text:#1a1a1a;--muted:#888;--bg:#f5f5f3;--white:#fff;
+  --border:#e8e4df;--border2:#d0ccc6;--r:14px;--r2:24px;
+}
+html,body{height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text);}
+#app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;overflow:hidden;}
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.on{display:flex;}
+#s-splash{background:#0f0f0f;align-items:center;justify-content:center;}
+.splash-inner{text-align:center;}
+.splash-inner h1{font-size:80px;font-weight:900;color:var(--white);letter-spacing:-5px;line-height:1;}
+.splash-inner .sub{font-size:12px;color:#555;letter-spacing:4px;margin-top:8px;text-transform:uppercase;}
+.splash-dots{display:flex;gap:6px;justify-content:center;margin-top:36px;}
+.sd{width:6px;height:6px;border-radius:50%;background:#333;animation:sdp 1.2s ease-in-out infinite;}
+.sd:nth-child(2){animation-delay:.2s;}.sd:nth-child(3){animation-delay:.4s;}
+@keyframes sdp{0%,100%{background:#333;}50%{background:var(--pink);}}
+.screen-body{padding:28px 24px;flex:1;display:flex;flex-direction:column;overflow-y:auto;}
+.step-bar{display:flex;gap:4px;margin-bottom:28px;}
+.step-seg{height:3px;border-radius:2px;flex:1;background:var(--border);}
+.step-seg.on{background:var(--pink);}
+.page-title{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px;}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+.field-lbl{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:6px;letter-spacing:.4px;}
+input[type=text],input[type=password],textarea{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--r);font-size:15px;font-family:inherit;color:var(--text);background:var(--white);outline:none;transition:border-color .2s;}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--pink);}
+textarea{resize:none;line-height:1.5;}
+.field-g{margin-bottom:18px;}
+.btn{width:100%;padding:15px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:-.3px;font-family:inherit;}
+.btn:active{transform:scale(.98);}
+.btn-pink{background:var(--pink);color:var(--white);}
+.btn-dark{background:var(--text);color:var(--white);}
+.btn-ghost{background:var(--white);color:var(--pink);border:2px solid var(--pink);margin-top:10px;}
+.btn-gray{background:var(--bg);color:var(--text);border:1px solid var(--border);margin-top:10px;}
+.code-grid{display:flex;gap:8px;justify-content:center;margin-bottom:8px;}
+.code-digit{width:52px;height:64px;border:2px solid var(--border);border-radius:12px;font-size:24px;font-weight:700;text-align:center;color:var(--text);background:var(--white);outline:none;transition:border-color .2s;font-family:inherit;}
+.code-digit:focus{border-color:var(--pink);}
+.code-hint{font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px;}
+.gender-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.g-card{padding:28px 12px;border-radius:var(--r);border:2px solid var(--border);text-align:center;cursor:pointer;transition:all .2s;background:var(--white);}
+.g-card.sel{border-color:var(--pink);background:var(--pink3);}
+.g-card .gi{font-size:36px;margin-bottom:8px;}
+.g-card span{font-size:15px;font-weight:600;}
+.q-section{font-size:11px;font-weight:700;color:var(--pink);letter-spacing:.5px;margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.q-section::after{content:'';flex:1;height:1px;background:var(--pink3);}
+.q-card{background:var(--bg);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;}
+.q-card .qt{font-size:13px;color:var(--muted);margin-bottom:7px;}
+.q-card textarea{background:var(--white);min-height:52px;font-size:13px;padding:9px 12px;}
+#s-main{background:var(--bg);}
+.top-bar{background:var(--white);padding:14px 20px 0;border-bottom:1px solid var(--border);position:relative;}
+.tb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.tb-logo{font-size:22px;font-weight:900;color:var(--pink);letter-spacing:-1px;position:absolute;left:50%;transform:translateX(-50%);}
+.status-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;}
+.sp-free{background:var(--teal2);color:var(--teal);}
+.sp-talk{background:var(--pink3);color:var(--pink);}
+.sdot{width:6px;height:6px;border-radius:50%;}
+.nav-tabs{display:flex;}
+.nav-tab{padding:10px 14px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab.on{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-body{display:none;padding:18px 20px 80px;overflow-y:auto;}
+.tab-body.on{display:block;}
+.pc{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:14px;margin-bottom:10px;}
+.pc-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
+.av-m{background:var(--blue3);color:var(--blue4);}
+.av-f{background:var(--pink3);color:var(--pink4);}
+.pc-name{font-size:15px;font-weight:600;}
+.pc-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.pc-qa{font-size:12px;color:var(--muted);line-height:1.6;}
+.pc-qa b{color:var(--text);}
+.hb{margin-left:auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s;flex-shrink:0;}
+.hb.on{background:var(--pink3);border-color:var(--pink2);}
+.match-banner{background:#111;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:12px;display:none;}
+.match-banner.show{display:block;}
+.mb-title{font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.mb-sub{font-size:12px;color:#888;}
+.draw-btn{width:100%;padding:16px;border-radius:var(--r);border:2px dashed var(--border2);background:var(--white);cursor:pointer;text-align:center;color:var(--muted);font-size:14px;font-weight:500;transition:all .2s;margin-bottom:12px;font-family:inherit;}
+.draw-btn:hover{border-color:var(--pink);color:var(--pink);}
+.card-result{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;display:none;}
+.cr-emoji{font-size:40px;margin-bottom:10px;}
+.cr-cat{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.4px;}
+.cr-text{font-size:16px;font-weight:600;line-height:1.5;}
+#admin-fab{position:absolute;bottom:18px;right:18px;width:42px;height:42px;border-radius:50%;background:#111;color:var(--white);border:none;cursor:pointer;font-size:17px;z-index:50;display:flex;align-items:center;justify-content:center;}
+#overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:flex-end;justify-content:center;}
+#overlay.show{display:flex;}
+.overlay-sheet{background:var(--white);border-radius:28px 28px 0 0;padding:24px 22px 36px;width:100%;max-width:430px;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:none;opacity:1;}}
+.notif-card{background:var(--pink3);border:1.5px solid var(--pink2);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;text-align:center;}
+.nc-title{font-size:14px;font-weight:700;color:var(--pink);}
+.nc-sub{font-size:12px;color:var(--pink4);margin-top:3px;}
+.topic-display{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:14px;}
+.td-emoji{font-size:36px;margin-bottom:8px;}
+.td-cat{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.4px;}
+.td-text{font-size:16px;font-weight:600;line-height:1.5;}
+.timer-wrap{text-align:center;margin:14px 0;}
+.timer-ring{position:relative;width:100px;height:100px;margin:0 auto 8px;}
+.timer-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:6;}
+.ring-fg{fill:none;stroke:var(--pink);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .9s linear;}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;}
+.heart-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.hyes{padding:13px;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--pink);color:var(--white);font-family:inherit;}
+.hno{padding:13px;border-radius:var(--r2);font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:inherit;}
+#match-cel{display:none;position:absolute;inset:0;background:#0f0f0f;z-index:200;flex-direction:column;align-items:center;justify-content:center;}
+#match-cel.show{display:flex;}
+.mc-heart{font-size:80px;animation:heartBeat .6s ease infinite alternate;}
+@keyframes heartBeat{from{transform:scale(1);}to{transform:scale(1.15);}}
+.mc-title{font-size:22px;font-weight:700;color:var(--white);margin:16px 0 8px;letter-spacing:-.5px;}
+.mc-sub{font-size:14px;color:#888;margin-bottom:28px;}
+#admin-panel{display:none;position:absolute;inset:0;background:var(--bg);z-index:150;overflow-y:auto;}
+#admin-panel.show{display:block;}
+.admin-body{padding:20px 22px;}
+.admin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.admin-title{font-size:20px;font-weight:700;}
+.admin-title span{color:var(--pink);}
+.close-btn{padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--white);font-size:13px;cursor:pointer;font-family:inherit;}
+.sec-lbl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:10px;text-transform:uppercase;}
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+.code-display{font-size:32px;font-weight:900;letter-spacing:8px;color:var(--pink);margin-bottom:8px;}
+.guests-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.guest-stat{background:var(--white);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);}
+.gs-num{font-size:24px;font-weight:700;margin-bottom:2px;}
+.gs-label{font-size:11px;color:var(--muted);}
+.room-list-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.room-list-card:hover{border-color:var(--pink2);}
+.room-list-card.sel{border:2px solid var(--pink);}
+.rlc-name{font-size:14px;font-weight:600;margin-bottom:4px;}
+.rlc-members{display:flex;flex-wrap:wrap;gap:4px;}
+.mem-chip{font-size:11px;padding:2px 7px;border-radius:99px;background:var(--bg);color:var(--muted);}
+.mem-row{display:flex;align-items:center;gap:8px;padding:9px 6px;border-radius:8px;cursor:pointer;transition:background .1s;}
+.mem-row:hover{background:var(--bg);}
+.mem-row.picked{background:var(--pink3);}
+.pick-badge{margin-left:auto;font-size:10px;background:var(--pink);color:var(--white);padding:2px 7px;border-radius:99px;font-weight:600;}
+.picked-bar{background:var(--bg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;}
+.pb-title{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;}
+.pb-chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.pb-chip{display:flex;align-items:center;gap:5px;background:var(--white);border:1px solid var(--pink2);border-radius:99px;padding:4px 10px 4px 7px;font-size:12px;color:var(--pink);font-weight:500;}
+.vs-tag{background:var(--pink);color:var(--white);font-size:10px;font-weight:700;padding:3px 7px;border-radius:99px;}
+.dur-pills{display:flex;gap:6px;justify-content:center;margin-bottom:16px;}
+.dp{padding:7px 16px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);transition:all .15s;font-family:inherit;}
+.dp.on{background:var(--pink);color:var(--white);border-color:var(--pink);}
+.send-banner{background:var(--pink3);border:1px solid var(--pink2);border-radius:var(--r);padding:12px;text-align:center;margin-bottom:14px;}
+.sb-name{font-size:14px;font-weight:600;color:var(--pink);}
+.sb-sub{font-size:11px;color:var(--pink4);margin-top:2px;}
+.tl-row{display:flex;gap:10px;padding:10px 0;}
+.tl-left{display:flex;flex-direction:column;align-items:center;}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.tl-dot.done{background:var(--pink);}
+.tl-dot.now{background:var(--pink);box-shadow:0 0 0 3px var(--pink3);}
+.tl-line{width:1px;flex:1;background:var(--border);margin:3px 0;}
+.tl-content{flex:1;padding-bottom:4px;}
+.tl-time{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.3px;}
+.tl-step{font-size:13px;font-weight:600;margin:2px 0;}
+.tl-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.tl-badge{display:inline-block;font-size:9px;font-weight:700;background:var(--pink);color:var(--white);padding:2px 6px;border-radius:99px;margin-left:4px;}
+.start-btn{padding:7px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:var(--pink);color:var(--white);margin-top:6px;font-family:inherit;}
+.skip-btn{padding:5px 12px;border-radius:99px;font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);margin-left:6px;font-family:inherit;}
+.run-timer{text-align:center;padding:20px 0;}
+.rt-num{font-size:56px;font-weight:900;letter-spacing:-3px;}
+.rt-lbl{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.4px;}
+#back-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;}
+#back-modal.show{display:flex;}
+.back-box{background:var(--white);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:320px;text-align:center;animation:fadeUp .2s ease;}
+.back-box-msg{font-size:16px;font-weight:600;color:var(--text);margin-bottom:20px;line-height:1.5;}
+.back-box-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.back-yes{padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--pink);color:var(--white);font-family:inherit;}
+.back-no{padding:13px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:inherit;}
+#pw-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:400;align-items:center;justify-content:center;}
+#pw-modal.show{display:flex;}
+.pw-box{background:var(--white);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:340px;animation:fadeUp .2s ease;}
+.pw-title{font-size:17px;font-weight:700;margin-bottom:4px;}
+.pw-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.pw-input-wrap{position:relative;margin-bottom:8px;}
+.pw-input-wrap input{padding-right:44px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:4px;}
+.pw-error{font-size:12px;color:#E24B4A;margin-bottom:14px;min-height:16px;}
+.pw-btns{display:flex;gap:8px;}
+.pw-btns button{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;border:none;transition:all .15s;}
+.pw-cancel{background:var(--bg);color:var(--muted);border:1px solid var(--border)!important;}
+.pw-confirm{background:var(--pink);color:var(--white);}
+/* 실시간 연동 상태 표시 */
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#ccc;display:inline-block;margin-right:4px;}
+.sync-dot.live{background:var(--teal);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+.guest-row{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:0.5px solid var(--border);font-size:13px;}
+.guest-row:last-child{border-bottom:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.fade{animation:fadeUp .25s ease both;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SPLASH -->
+<div class="screen on" id="s-splash">
+  <div class="splash-inner fade">
+    <h1>12:12</h1>
+    <div class="sub">Mission: 썸 가능</div>
+    <div class="splash-dots"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
+    <button onclick="if(typeof openAdmin==='function')openAdmin();else alert('잠시 후 다시 시도해주세요')" style="margin-top:48px;padding:8px 20px;border-radius:99px;border:1px solid #333;background:none;color:#555;font-size:12px;font-family:inherit;cursor:pointer;letter-spacing:.5px;">관리자로 입장</button>
+  </div>
+</div>
+
+<!-- ENTER CODE -->
+<div class="screen" id="s-code">
+  <div class="screen-body">
+    <div class="step-bar"><div class="step-seg on"></div><div class="step-seg"></div><div class="step-seg"></div><div class="step-seg"></div></div>
+    <div class="page-title">입장 코드 입력</div>
+    <div class="page-sub">관리자가 배포한 4자리 코드를 입력해주세요</div>
+    <div class="code-grid">
+      <input type="text" class="code-digit" id="cd-0" maxlength="1" inputmode="numeric" oninput="cdInput(this,0)" onkeydown="cdKey(this,0)">
+      <input type="text" class="code-digit" id="cd-1" maxlength="1" inputmode="numeric" oninput="cdInput(this,1)" onkeydown="cdKey(this,1)">
+      <input type="text" class="code-digit" id="cd-2" maxlength="1" inputmode="numeric" oninput="cdInput(this,2)" onkeydown="cdKey(this,2)">
+      <input type="text" class="code-digit" id="cd-3" maxlength="1" inputmode="numeric" oninput="cdInput(this,3)" onkeydown="cdKey(this,3)">
+    </div>
+    <div class="code-hint">행사장에 부착된 QR을 스캔하면 자동으로 이 화면이 열려요</div>
+    <div style="margin-top:auto;">
+      <button class="btn btn-pink" onclick="submitCode()">입장하기</button>
+      <button class="btn btn-gray" onclick="openAdmin()">관리자로 입장</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENDER + NICK -->
+<div class="screen" id="s-gender">
+  <div class="screen-body">
+    <div class="step-bar"><div class="step-seg on"></div><div class="step-seg on"></div><div class="step-seg"></div><div class="step-seg"></div></div>
+    <div class="page-title">안녕하세요 👋</div>
+    <div class="page-sub">성별을 선택하고 별명을 입력해주세요</div>
+    <div class="gender-row">
+      <div class="g-card" id="gm" onclick="pickGender('m')"><div class="gi">👨</div><span>남성</span></div>
+      <div class="g-card" id="gf" onclick="pickGender('f')"><div class="gi">👩</div><span>여성</span></div>
+    </div>
+    <div class="field-g">
+      <label class="field-lbl">별명</label>
+      <input type="text" id="inp-nick" placeholder="ex) 새벽 라면 좋아하는 준호" maxlength="20">
+    </div>
+    <div style="margin-top:auto;">
+      <button class="btn btn-pink" onclick="goToProfile()">다음으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="s-profile">
+  <div class="screen-body">
+    <div class="step-bar"><div class="step-seg on"></div><div class="step-seg on"></div><div class="step-seg on"></div><div class="step-seg"></div></div>
+    <div class="page-title">나를 소개해줘</div>
+    <div class="page-sub">각 파트에서 랜덤으로 뽑힌 질문이에요 ✨<br>작성 후 뒤로가기로 수정할 수 있어요</div>
+    <div id="prof-qs"></div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-pink" onclick="submitProfile()">프로필 완성!</button>
+      <button class="btn btn-gray" onclick="goScreen('s-gender')">← 뒤로가기</button>
+    </div>
+  </div>
+</div>
+
+<!-- WAITING -->
+<div class="screen" id="s-wait">
+  <div class="screen-body" style="align-items:center;justify-content:center;text-align:center;gap:0;">
+    <div style="font-size:40px;margin-bottom:16px;">⏳</div>
+    <div class="page-title" style="font-size:20px;">잠시 기다려주세요</div>
+    <div class="page-sub" style="margin-bottom:0;">관리자가 행사를 시작하면<br>바로 알려드릴게요!</div>
+    <div style="margin-top:24px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;">
+      <span class="sync-dot live"></span> Firebase 연결됨
+    </div>
+    <div id="wait-nick" style="margin-top:8px;font-size:13px;color:var(--muted);"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="screen" id="s-main">
+  <div class="top-bar">
+    <div class="tb-head">
+      <button onclick="openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);font-family:inherit;z-index:1;">
+        <span style="font-size:16px;">←</span> 뒤로
+      </button>
+      <div class="tb-logo">12:12</div>
+      <div id="my-status" class="status-pill sp-free"><div class="sdot" style="background:var(--teal);"></div>자유 대화 중</div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab on" onclick="switchTab('people')">참가자</button>
+      <button class="nav-tab" onclick="switchTab('starter')">대화카드</button>
+      <button class="nav-tab" onclick="switchTab('me')">내 프로필</button>
+    </div>
+  </div>
+  <div class="tab-body on" id="tab-people">
+    <div class="match-banner" id="match-banner">
+      <div class="mb-title">💘 매칭!</div>
+      <div class="mb-sub" id="mb-sub"></div>
+    </div>
+    <div id="people-list"></div>
+  </div>
+  <div class="tab-body" id="tab-starter">
+    <div style="font-size:20px;font-weight:700;margin-bottom:6px;">대화 스타터 카드</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px;">"이 카드 꺼내도 돼요?" 자체가 시작이에요 😄</div>
+    <button class="draw-btn" onclick="drawCard()">🎴  카드 뽑기</button>
+    <div class="card-result" id="card-result">
+      <div class="cr-emoji" id="cr-emoji"></div>
+      <div class="cr-cat" id="cr-cat"></div>
+      <div class="cr-text" id="cr-text"></div>
+      <button class="btn btn-gray" style="margin-top:14px;" onclick="drawCard()">다른 카드</button>
+    </div>
+  </div>
+  <div class="tab-body" id="tab-me">
+    <div id="my-prof-view"></div>
+  </div>
+  <button id="admin-fab" onclick="openAdmin()">⚙</button>
+</div>
+
+<!-- ADMIN HOME SCREEN -->
+<div class="screen" id="s-admin">
+  <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:20px;font-weight:900;color:var(--white);letter-spacing:-1px;">12:12 <span style="color:var(--pink);font-size:13px;font-weight:500;">관리자</span></div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#555;"><span class="sync-dot live"></span>실시간 연동</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:20px;">
+
+    <!-- 고유 코드 -->
+    <div class="sec-lbl">현재 고유 코드</div>
+    <div class="info-card">
+      <div class="code-display" id="admin-home-code">1212</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="admin-home-code-inp" placeholder="새 코드 입력" style="flex:1;font-size:14px;padding:9px 12px;">
+        <button onclick="changeCodeFromHome()" style="padding:9px 16px;border-radius:10px;border:none;background:var(--pink);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">변경</button>
+      </div>
+    </div>
+
+    <!-- 게스트 현황 -->
+    <div class="sec-lbl">실시간 게스트 현황</div>
+    <div class="guests-grid">
+      <div class="guest-stat"><div class="gs-num" id="ags-total" style="color:var(--text);">0</div><div class="gs-label">전체</div></div>
+      <div class="guest-stat"><div class="gs-num" id="ags-m" style="color:var(--blue);">0</div><div class="gs-label">남성</div></div>
+      <div class="guest-stat"><div class="gs-num" id="ags-f" style="color:var(--pink);">0</div><div class="gs-label">여성</div></div>
+      <div class="guest-stat"><div class="gs-num" id="ags-match" style="color:var(--teal);">0</div><div class="gs-label">매칭</div></div>
+    </div>
+
+    <!-- 입장한 게스트 -->
+    <div class="sec-lbl">입장한 게스트</div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:16px;">
+      <div id="admin-home-guests"><div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div></div>
+    </div>
+
+    <!-- 타임라인 -->
+    <div class="sec-lbl">타임라인</div>
+    <div id="admin-home-timeline"></div>
+
+    <!-- 룸 관리 -->
+    <div class="sec-lbl" style="margin-top:16px;">룸 관리</div>
+    <div id="admin-home-rooms"></div>
+
+    <div style="height:40px;"></div>
+  </div>
+
+  <!-- 룸 상세 패널 -->
+  <div id="admin-room-detail-panel" style="display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:200;max-width:430px;margin:0 auto;">
+    <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
+      <button onclick="closeRoomDetail()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;padding:0;">←</button>
+      <div style="font-size:15px;font-weight:600;color:var(--white);" id="room-detail-title"></div>
+    </div>
+    <div style="padding:16px;">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:12px;">
+        <div id="ap-mem-list"></div>
+      </div>
+      <div class="picked-bar">
+        <div class="pb-title">지목된 참가자 <span style="font-weight:400;color:var(--muted);">(2명 선택)</span></div>
+        <div class="pb-chips" id="ap-picked-chips"><span style="font-size:12px;color:var(--muted);">아직 없음</span></div>
+      </div>
+      <div id="ap-pick-actions">
+        <div class="sec-lbl" style="margin-bottom:8px;">타이머 설정</div>
+        <div class="dur-pills" style="justify-content:flex-start;margin-bottom:14px;">
+          <button class="dp" onclick="setDur(3,this)">3분</button>
+          <button class="dp on" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
+        </div>
+        <button class="btn btn-pink" onclick="autoPairAndSend()">🎲 자동 페어링 + 주제 전송</button>
+        <button class="btn btn-gray" onclick="closeRoomDetail()">← 돌아가기</button>
+      </div>
+      <div id="ap-topic-area" style="display:none;">
+        <div class="sec-lbl">대화 주제 카드</div>
+        <div class="topic-display">
+          <div class="td-emoji" id="apt-emoji"></div>
+          <div class="td-cat" id="apt-cat"></div>
+          <div class="td-text" id="apt-text"></div>
+        </div>
+        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="shuffleTopic()">🔀 다른 주제로</button>
+        <div class="sec-lbl">타이머</div>
+        <div class="dur-pills">
+          <button class="dp on" onclick="setDur(3,this)">3분</button>
+          <button class="dp" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
+        </div>
+        <div class="send-banner">
+          <div class="sb-name" id="ap-pair-names"></div>
+          <div class="sb-sub">에게 주제와 타이머가 전송됩니다</div>
+        </div>
+        <button class="btn btn-dark" onclick="sendMatch()">지금 전송하기 →</button>
+        <button class="btn btn-gray" onclick="backTopicToPick()">← 돌아가기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 타이머 진행중 패널 -->
+  <div id="admin-running-panel" style="display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:200;max-width:430px;margin:0 auto;">
+    <div style="background:#0f0f0f;padding:16px 20px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:15px;font-weight:600;color:var(--white);">대화 진행 중</div>
+    </div>
+    <div style="padding:16px;">
+      <div class="topic-display" id="apr-topic"></div>
+      <div class="run-timer">
+        <div class="rt-num" id="ap-timer-num">05:00</div>
+        <div class="rt-lbl">남은 시간</div>
+      </div>
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;" id="ap-pair-lbl"></div>
+      <button class="btn btn-ghost" onclick="stopTimer()">타이머 종료</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACK CONFIRM MODAL -->
+<div id="back-modal">
+  <div class="back-box">
+    <div class="back-box-msg">이전 화면으로<br>돌아가시겠습니까?</div>
+    <div class="back-box-btns">
+      <button class="back-no" onclick="closeBackModal()">아니오</button>
+      <button class="back-yes" onclick="confirmBack()">예</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: 지목 알림 + 타이머 -->
+<div id="overlay">
+  <div class="overlay-sheet">
+    <div class="notif-card">
+      <div class="nc-title">🔔 대화 주제가 도착했어요!</div>
+      <div class="nc-sub">관리자가 연결해드렸어요</div>
+    </div>
+    <div class="topic-display">
+      <div class="td-emoji" id="ov-emoji"></div>
+      <div class="td-cat" id="ov-cat"></div>
+      <div class="td-text" id="ov-text"></div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-ring">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle class="ring-bg" cx="50" cy="50" r="44"/>
+          <circle class="ring-fg" id="ring-fg" cx="50" cy="50" r="44" stroke-dasharray="276.5" stroke-dashoffset="0"/>
+        </svg>
+        <div class="ring-num" id="ring-num">5:00</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);">이 시간 동안 대화해봐요</div>
+    </div>
+    <div id="ov-ended" style="display:none;">
+      <div style="text-align:center;font-size:14px;color:var(--muted);margin-bottom:12px;">대화가 끝났어요! 어땠나요?</div>
+      <div class="heart-row">
+        <button class="hyes" onclick="sendHeart()">💗 호감이에요</button>
+        <button class="hno" onclick="closeOverlay()">괜찮아요</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MATCH CELEBRATION -->
+<div id="match-cel">
+  <div class="mc-heart">💗</div>
+  <div class="mc-title">매칭이 성사되었어요!</div>
+  <div class="mc-sub" id="mc-sub"></div>
+  <button class="btn btn-ghost" style="width:200px;" onclick="closeCel()">확인</button>
+</div>
+
+<!-- ADMIN PASSWORD MODAL -->
+<div id="pw-modal">
+  <div class="pw-box">
+    <div class="pw-title">관리자 확인</div>
+    <div class="pw-sub">관리자 비밀번호를 입력해주세요</div>
+    <div class="pw-input-wrap">
+      <input type="password" id="pw-inp" placeholder="비밀번호" onkeydown="if(event.key==='Enter')checkPw()">
+      <button class="pw-eye" onclick="togglePwEye(this)" type="button">👁</button>
+    </div>
+    <div class="pw-error" id="pw-error"></div>
+    <div class="pw-btns">
+      <button class="pw-cancel" onclick="closePwModal()">취소</button>
+      <button class="pw-confirm" onclick="checkPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-body">
+    <div class="admin-head">
+      <div class="admin-title">관리자 <span>패널</span>
+        <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px;"><span class="sync-dot live"></span>실시간 연동</span>
+      </div>
+      <button class="close-btn" onclick="closeAdmin()">닫기</button>
+    </div>
+
+    <div id="ap-home">
+      <div class="sec-lbl">현재 고유 코드</div>
+      <div class="info-card">
+        <div class="code-display" id="ap-code-display">1212</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="ap-code-inp" placeholder="새 코드 입력" style="flex:1;font-size:14px;padding:9px 12px;">
+          <button onclick="changeCode()" style="padding:9px 16px;border-radius:10px;border:none;background:var(--pink);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">변경</button>
+        </div>
+      </div>
+
+      <div class="sec-lbl">실시간 게스트 현황</div>
+      <div class="guests-grid">
+        <div class="guest-stat"><div class="gs-num" id="gs-total" style="color:var(--text);">0</div><div class="gs-label">전체</div></div>
+        <div class="guest-stat"><div class="gs-num" id="gs-m" style="color:var(--blue);">0</div><div class="gs-label">남성</div></div>
+        <div class="guest-stat"><div class="gs-num" id="gs-f" style="color:var(--pink);">0</div><div class="gs-label">여성</div></div>
+        <div class="guest-stat"><div class="gs-num" id="gs-match" style="color:var(--teal);">0</div><div class="gs-label">매칭</div></div>
+      </div>
+
+      <div class="sec-lbl">입장한 게스트</div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:16px;">
+        <div id="guest-list-admin"><div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div></div>
+      </div>
+
+      <div class="sec-lbl">타임라인</div>
+      <div id="admin-timeline"></div>
+
+      <div class="sec-lbl" style="margin-top:16px;">룸 관리</div>
+      <div id="ap-room-list"></div>
+    </div>
+
+    <div id="ap-room-detail" style="display:none;">
+      <div class="sec-lbl" id="ap-room-lbl"></div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:12px;">
+        <div id="ap-mem-list"></div>
+      </div>
+      <div class="picked-bar">
+        <div class="pb-title">지목된 참가자 <span style="font-weight:400;color:var(--muted);">(2명 선택)</span></div>
+        <div class="pb-chips" id="ap-picked-chips"><span style="font-size:12px;color:var(--muted);">아직 없음</span></div>
+      </div>
+      <div id="ap-pick-actions">
+        <button class="btn btn-pink" onclick="showTopicArea()">대화 주제 선택하기 →</button>
+        <button class="btn btn-gray" onclick="clearPicked()">선택 초기화</button>
+        <button class="btn btn-gray" onclick="backToHome()">← 돌아가기</button>
+      </div>
+      <div id="ap-topic-area" style="display:none;">
+        <div class="sec-lbl">대화 주제 카드</div>
+        <div class="topic-display">
+          <div class="td-emoji" id="apt-emoji"></div>
+          <div class="td-cat" id="apt-cat"></div>
+          <div class="td-text" id="apt-text"></div>
+        </div>
+        <button class="btn btn-gray" style="margin-bottom:14px;" onclick="shuffleTopic()">🔀 다른 주제로</button>
+        <div class="sec-lbl">타이머</div>
+        <div class="dur-pills">
+          <button class="dp on" onclick="setDur(3,this)">3분</button>
+          <button class="dp" onclick="setDur(5,this)">5분</button>
+          <button class="dp" onclick="setDur(7,this)">7분</button>
+          <button class="dp" onclick="setDur(10,this)">10분</button>
+        </div>
+        <div class="send-banner">
+          <div class="sb-name" id="ap-pair-names"></div>
+          <div class="sb-sub">에게 주제와 타이머가 전송됩니다</div>
+        </div>
+        <button class="btn btn-dark" onclick="sendMatch()">지금 전송하기 →</button>
+        <button class="btn btn-gray" onclick="backTopicToPick()">← 돌아가기</button>
+      </div>
+    </div>
+
+    <div id="ap-running" style="display:none;">
+      <div class="sec-lbl">진행 중</div>
+      <div class="topic-display" id="apr-topic"></div>
+      <div class="run-timer">
+        <div class="rt-num" id="ap-timer-num">05:00</div>
+        <div class="rt-lbl">남은 시간</div>
+      </div>
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:16px;" id="ap-pair-lbl"></div>
+      <button class="btn btn-ghost" onclick="stopTimer()">타이머 종료</button>
+      <button class="btn btn-gray" onclick="closeAdmin()">패널 닫기</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- 스플래시 독립 처리 (모듈 로딩과 무관) -->
+<script>
+setTimeout(function(){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  var sc=document.getElementById('s-code');
+  if(sc) sc.classList.add('on');
+}, 1800);
+
+function cdInput(el,i){
+  if(el.value&&i<3) document.getElementById('cd-'+(i+1)).focus();
+}
+function cdKey(el,i){
+  if(event.key==='Backspace'&&!el.value&&i>0) document.getElementById('cd-'+(i-1)).focus();
+}
+function getCode(){
+  return [0,1,2,3].map(i=>document.getElementById('cd-'+i).value||'').join('');
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA934Dry-AFx1IdwxspE816j3-Vu9gwEVU",
+  authDomain: "wr1-meeting-a8b4c.firebaseapp.com",
+  projectId: "wr1-meeting-a8b4c",
+  messagingSenderId: "405688652128",
+  appId: "1:405688652128:web:0123f4055ae35835874e05"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function doc(db, ...args){
+  let ref = db;
+  for(let i=0; i<args.length; i+=2){
+    ref = ref.collection(args[i]).doc(args[i+1]);
+  }
+  return ref;
+}
+function collection(db, name){ return db.collection(name); }
+async function setDoc(ref, data, opts){ if(opts&&opts.merge) return ref.set(data,{merge:true}); return ref.set(data); }
+async function getDoc(ref){ return ref.get(); }
+async function updateDoc(ref, data){ return ref.update(data); }
+async function deleteDoc(ref){ return ref.delete(); }
+function serverTimestamp(){ return firebase.firestore.FieldValue.serverTimestamp(); }
+function onSnapshot(ref, cb){ return ref.onSnapshot(cb); }
+function query(ref, ...args){ let q=ref; args.forEach(a=>{ if(a._type==='orderBy') q=q.orderBy(a.field,a.dir); }); return q; }
+function orderBy(field, dir='asc'){ return {_type:'orderBy', field, dir}; }
+
+// ── 연결 테스트 ──────────────────────────────────
+async function testConnection(){
+  try{
+    await setDoc(doc(db,'_test','ping'),{t:Date.now()});
+    console.log('✅ Firebase 연결 성공');
+    document.querySelectorAll('.sync-dot').forEach(d=>d.classList.add('live'));
+  }catch(e){
+    console.warn('Firebase 연결 경고:', e.message);
+    // 연결 실패해도 앱은 계속 진행
+  }
+}
+testConnection(); // 비동기로 실행, 앱 진행을 막지 않음
+
+// ── DATA ─────────────────────────────────────────
+const QUESTIONS={
+  "🎵 취향 & 관심사":["요즘 자주 듣는 노래는?","최근에 본 영화나 드라마 중 기억에 남는 거 있어?","요즘 꽂혀 있는 게 있어?","즐겨 보는 유튜브 채널 있어?","취미 중에 가장 진심인 게 뭐야?","좋아하는 음식 장르가 있어?","가장 좋아하는 계절은?"],
+  "🌅 일상 & 라이프스타일":["주말 아침엔 보통 뭐 해?","요즘 가장 잘 쉬는 방법은?","스트레스 받으면 어떻게 풀어?","집에 있는 게 좋아, 나가는 게 좋아?","카페 자주 가는 편이야?","운동하는 편이야?"],
+  "✈️ 여행 & 경험":["가장 기억에 남는 여행지는?","여행 스타일이 계획파야, 즉흥파야?","다음에 꼭 가보고 싶은 나라나 도시는?","혼자 여행 해봤어?","여행 가면 뭐가 제일 즐거워?"],
+  "😄 유머 & 가벼운 질문":["고수 먹을 수 있어?","살면서 가장 잘한 소비가 뭐야?","어릴 때 장래희망이 뭐였어?","나만 아는 맛집 같은 거 있어?","노래방 가면 꼭 부르는 노래 있어?","선물 받을 때 뭐가 제일 좋아?"],
+  "💭 가치관 & 성격":["본인이 내향적인 것 같아, 외향적인 것 같아?","가장 편한 사람은 어떤 유형이야?","결정 빨리 하는 편이야, 오래 고민하는 편이야?","새로운 거 도전하는 거 좋아해?","기억에 남는 칭찬이 있어?"],
+  "💑 연애 & 관계":["데이트할 때 뭐 하는 거 제일 좋아?","함께 있을 때 충전돼, 혼자 있을 때 충전돼?","연락은 자주 하는 스타일이야?","첫인상이랑 나중 인상이 많이 달라진다는 말 들어본 적 있어?"]
+};
+const TOPICS=[
+  {e:"🎵",c:"취향",t:"요즘 자주 듣는 노래 있어? 왜 좋아?"},
+  {e:"✈️",c:"여행",t:"인생에서 가장 기억에 남는 여행지는?"},
+  {e:"😄",c:"유머",t:"살면서 가장 잘한 소비가 뭐야?"},
+  {e:"🌅",c:"일상",t:"주말 아침에 뭐 하는 게 제일 좋아?"},
+  {e:"💭",c:"가치관",t:"지금 이 순간 가장 소중한 게 뭐야?"},
+  {e:"🍜",c:"음식",t:"나만 아는 인생 음식이 있어?"},
+  {e:"🎬",c:"콘텐츠",t:"최근에 강추할 수 있는 콘텐츠가 있어?"},
+  {e:"🔮",c:"미래",t:"5년 후 어떤 모습이고 싶어?"},
+  {e:"😅",c:"재미",t:"어릴 때 장래희망이 뭐였어? 지금이랑 비교하면?"},
+  {e:"💑",c:"연애",t:"이상적인 데이트 코스가 있어?"},
+  {e:"🏃",c:"취미",t:"취미 중에 가장 진심인 게 뭐야?"},
+  {e:"🌙",c:"밤",t:"잠 못 이루는 밤엔 보통 뭐 해?"}
+];
+const ROOMS=[
+  {id:1,name:"FUNWAY STORE",step:3},
+  {id:2,name:"Class ROOM 1",step:4},
+  {id:3,name:"Class ROOM 2",step:5}
+];
+const TIMELINE=[
+  {time:"0:00~0:10",step:"입장 & 앱 세팅",desc:"QR 입장, 프로필 작성",state:"done",stepIdx:1,duration:0},
+  {time:"0:10~0:20",step:"게임 설명",desc:"진행 방식 안내",state:"now",stepIdx:2,duration:0},
+  {time:"0:20~0:40",step:"1차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:3,duration:20*60},
+  {time:"0:40~1:00",step:"2차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:4,duration:20*60},
+  {time:"1:00~1:20",step:"3차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:5,duration:20*60},
+  {time:"1:20~1:50",step:"프리토킹",desc:"전체 모여서 자유 대화 + 매칭 알림",state:"",stepIdx:6,duration:30*60}
+];
+
+// ── STATE ────────────────────────────────────────
+let st={
+  gender:null,nick:"",myId:null,answers:{},myQs:{},
+  hearts:{},timerInt:null,timerLeft:0,
+  adminRoom:null,adminPicked:[],adminDur:5,adminTopic:null,
+  currentStep:2,heartsEnabled:false,guests:{},matches:{},
+  stepTimerInt:null,stepTimerLeft:0
+};
+const ADMIN_PW='1212admin';
+const SESSION_REF=()=>doc(db,'session','current');
+const GUESTS_REF=()=>collection(db,'guests');
+
+// ── UTILS ────────────────────────────────────────
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+function _goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function goScreen(id){_goScreen(id);}
+window.goScreen=goScreen;
+function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function uid(){return Math.random().toString(36).slice(2,10);}
+
+// ── CODE INPUT ───────────────────────────────────
+
+async function submitCode(){
+  const c=getCode();
+  console.log('입력된 코드:', c, '길이:', c.length);
+  if(c.length<4){alert('4자리 코드를 입력해주세요. 현재: '+c);return;}
+  try{
+    const snap=await getDoc(SESSION_REF());
+    const code=(snap.exists&&snap.data()&&snap.data().code)||'1212';
+    console.log('Firebase 코드:', code);
+    if(c===code){
+      goScreen('s-gender');
+    } else {
+      alert('코드가 올바르지 않아요.\n입력: '+c+'\n정답: '+code);
+    }
+  }catch(e){
+    console.error('submitCode error:',e);
+    if(c==='1212') goScreen('s-gender');
+    else alert('코드 확인 실패.\n기본코드는 1212입니다.\n입력된 코드: '+c);
+  }
+}
+window.submitCode=submitCode;
+
+// ── GENDER ───────────────────────────────────────
+function pickGender(g){
+  st.gender=g;
+  document.getElementById('gm').classList.toggle('sel',g==='m');
+  document.getElementById('gf').classList.toggle('sel',g==='f');
+}
+window.pickGender=pickGender;
+
+function goToProfile(){
+  if(!st.gender){alert('성별을 선택해주세요');return;}
+  const n=document.getElementById('inp-nick').value.trim();
+  if(!n){alert('별명을 입력해주세요');return;}
+  st.nick=n;
+  buildProfile();
+  goScreen('s-profile');
+}
+window.goToProfile=goToProfile;
+
+// ── PROFILE ──────────────────────────────────────
+function buildProfile(){
+  const el=document.getElementById('prof-qs');
+  el.innerHTML='';st.myQs={};
+  Object.entries(QUESTIONS).forEach(([sec,qs])=>{
+    const picked=shuffle(qs).slice(0,2);
+    st.myQs[sec]=picked;
+    el.innerHTML+=`<div class="q-section">${sec}</div>`;
+    picked.forEach((q,i)=>{
+      el.innerHTML+=`<div class="q-card"><div class="qt">${q}</div><textarea rows="2" id="qa-${sec}-${i}" placeholder="자유롭게 답해줘!"></textarea></div>`;
+    });
+  });
+}
+window.buildProfile=buildProfile;
+
+async function submitProfile(){
+  st.answers={};
+  Object.entries(st.myQs).forEach(([sec,qs])=>{
+    st.answers[sec]=[];
+    qs.forEach((q,i)=>{
+      const v=document.getElementById(`qa-${sec}-${i}`)?.value.trim()||'';
+      st.answers[sec].push({q,a:v||'...'});
+    });
+  });
+  st.myId=uid();
+  try{
+    await setDoc(doc(db,'guests',st.myId),{
+      id:st.myId,nick:st.nick,gender:st.gender,
+      answers:st.answers,hearts:{},matchedWith:null,
+      online:true,
+      lastSeen:serverTimestamp(),
+      joinedAt:serverTimestamp()
+    });
+    // ── 하트비트: 10초마다 lastSeen 갱신 ──
+    st.heartbeatInt=setInterval(async()=>{
+      try{
+        await updateDoc(doc(db,'guests',st.myId),{lastSeen:serverTimestamp(),online:true});
+      }catch(e){}
+    },10000);
+    // 창 닫을 때 offline 표시
+    window.addEventListener('beforeunload',()=>{
+      clearInterval(st.heartbeatInt);
+      updateDoc(doc(db,'guests',st.myId),{online:false,lastSeen:serverTimestamp()}).catch(()=>{});
+    });
+  }catch(e){console.log('Firestore write error',e);}
+  document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
+  renderMyProfile();
+  goScreen('s-wait');
+  listenSession();
+  listenMyDoc();
+}
+window.submitProfile=submitProfile;
+
+// ── REALTIME LISTENERS ───────────────────────────
+function listenSession(){
+  onSnapshot(SESSION_REF(),(snap)=>{
+    if(!snap.exists())return;
+    const d=snap.data();
+    if(d.step!==undefined&&d.step!==st.currentStep){
+      st.currentStep=d.step;
+      if(d.step>=3) st.heartsEnabled=true;
+      if(document.getElementById('s-wait').classList.contains('on')) goScreen('s-main');
+      renderPeople();
+    }
+    // 룸 배정 정보 수신
+    if(d.roomAssignment){
+      st.currentRoomAssignment=d.roomAssignment;
+      if(st.myId&&d.roomAssignment[st.myId]){
+        showRoomAssignment(d.roomAssignment[st.myId]);
+      }
+    }
+    if(d.code){document.getElementById('ap-code-display').textContent=d.code;}
+    if(d.matchReveal&&st.myId&&d.matchReveal[st.myId]){
+      const partner=d.matchReveal[st.myId];
+      document.getElementById('mc-sub').textContent=partner+'님과 서로 호감이에요!';
+      document.getElementById('match-cel').classList.add('show');
+    }
+  });
+}
+
+function showRoomAssignment(roomName){
+  const existing=document.getElementById('room-assign-banner');
+  if(existing) existing.remove();
+  const banner=document.createElement('div');
+  banner.id='room-assign-banner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:500;max-width:430px;margin:0 auto;';
+  banner.innerHTML=`
+    <div style="background:var(--pink);color:#fff;padding:20px 24px;text-align:center;animation:slideDown .3s ease;">
+      <div style="font-size:12px;font-weight:500;opacity:.8;margin-bottom:6px;">📍 지금 이동할 룸</div>
+      <div style="font-size:24px;font-weight:700;">${roomName}</div>
+    </div>`;
+  document.body.appendChild(banner);
+}
+
+function listenMyDoc(){
+  if(!st.myId)return;
+  onSnapshot(doc(db,'guests',st.myId),(snap)=>{
+    // 문서가 삭제되면 강퇴된 것
+    if(!snap.exists()){
+      clearInterval(st.heartbeatInt);
+      clearInterval(st.timerInt);
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+      document.getElementById('app').innerHTML=`
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:#0f0f0f;">
+          <div style="font-size:48px;margin-bottom:16px;">🚫</div>
+          <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">퇴장 처리되었습니다</div>
+          <div style="font-size:14px;color:#666;">관리자에 의해 강퇴되었어요</div>
+        </div>`;
+      return;
+    }
+    const d=snap.data();
+    if(d.topicAlert&&!d.topicSeen){
+      showOverlay(d.topicAlert,d.topicDur||5);
+      updateDoc(doc(db,'guests',st.myId),{topicSeen:true});
+    }
+  });
+}
+
+function listenGuests(){
+  onSnapshot(query(GUESTS_REF(),orderBy('joinedAt')),(snap)=>{
+    st.guests={};
+    const now=Date.now();
+    snap.forEach(d=>{
+      const data=d.data();
+      const lastSeen=data.lastSeen?.toMillis?.()|| now;
+      const isOnline=data.online!==false&&(now-lastSeen)<30000;
+      st.guests[d.id]={...data,online:isOnline};
+    });
+    updateAdminStats();
+    renderGuestListAdmin();
+    renderPeople();
+    // 관리자 홈 화면도 업데이트
+    if(st.isAdmin){
+      updateAdminHomeStats();
+      renderAdminHomeGuests();
+      renderAdminHomeRooms();
+    }
+  });
+}
+
+// ── 강퇴 ─────────────────────────────────────────
+async function kickGuest(id,nick){
+  if(!confirm(`${nick}님을 강퇴하시겠어요?`))return;
+  try{
+    await deleteDoc(doc(db,'guests',id));
+    alert(nick+'님을 강퇴했어요.');
+  }catch(e){console.error('강퇴 실패',e);}
+}
+window.kickGuest=kickGuest;
+
+// ── TABS ─────────────────────────────────────────
+function switchTab(id){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-body').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  const map={people:0,starter:1,me:2};
+  document.querySelectorAll('.nav-tab')[map[id]]?.classList.add('on');
+}
+window.switchTab=switchTab;
+
+// ── PEOPLE ───────────────────────────────────────
+function renderPeople(){
+  const opp=st.gender==='m'?'f':'m';
+  const list=document.getElementById('people-list');
+  const guests=Object.values(st.guests).filter(g=>g.gender===opp);
+  if(!guests.length){
+    list.innerHTML='<div style="text-align:center;padding:40px 0;font-size:13px;color:var(--muted);">아직 상대방이 입장하지 않았어요</div>';
+    return;
+  }
+  list.innerHTML=guests.map(u=>`
+    <div class="pc">
+      <div class="pc-top">
+        <div class="av av-${u.gender}">${u.nick[0]}</div>
+        <div><div class="pc-name">${u.nick}</div><div class="pc-meta">${u.gender==='m'?'남성':'여성'}</div></div>
+        ${st.heartsEnabled
+          ?`<button class="hb ${st.hearts[u.id]?'on':''}" onclick="toggleHeart('${u.id}','${u.nick}',this)">${st.hearts[u.id]?'❤️':'🤍'}</button>`
+          :'<span style="margin-left:auto;font-size:10px;color:var(--muted);text-align:right;">룸 이동 후<br>하트 가능</span>'}
+      </div>
+      <div class="pc-qa">${Object.values(u.answers||{}).flat().slice(0,4).map(qa=>`<b>${qa.q}</b><br>"${qa.a}"`).join('<br><br>')}</div>
+    </div>`).join('');
+}
+
+async function toggleHeart(targetId,targetNick,btn){
+  if(!st.heartsEnabled)return;
+  st.hearts[targetId]=!st.hearts[targetId];
+  btn.classList.toggle('on',st.hearts[targetId]);
+  btn.innerHTML=st.hearts[targetId]?'❤️':'🤍';
+  if(!st.myId)return;
+  try{
+    const myRef=doc(db,'guests',st.myId);
+    const hearts={...((await getDoc(myRef)).data()?.hearts||{}),[targetId]:st.hearts[targetId]};
+    await updateDoc(myRef,{hearts});
+    const targetSnap=await getDoc(doc(db,'guests',targetId));
+    if(targetSnap.exists()&&targetSnap.data().hearts?.[st.myId]&&st.hearts[targetId]){
+      const b=document.getElementById('match-banner');
+      document.getElementById('mb-sub').textContent=targetNick+'님과 매칭됐어요! 프리토킹 때 알림이 가요 😊';
+      b.classList.add('show');
+      setTimeout(()=>b.classList.remove('show'),4000);
+      st.matches[targetId]=targetNick;
+    }
+  }catch(e){console.log(e);}
+}
+window.toggleHeart=toggleHeart;
+
+// ── STARTER CARD ─────────────────────────────────
+function drawCard(){
+  const t=TOPICS[Math.floor(Math.random()*TOPICS.length)];
+  document.getElementById('cr-emoji').textContent=t.e;
+  document.getElementById('cr-cat').textContent=t.c;
+  document.getElementById('cr-text').textContent=t.t;
+  const r=document.getElementById('card-result');
+  r.style.display='block';r.classList.add('fade');
+}
+window.drawCard=drawCard;
+
+// ── MY PROFILE ───────────────────────────────────
+function renderMyProfile(){
+  const el=document.getElementById('my-prof-view');
+  let h=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <div class="av av-${st.gender||'m'}" style="width:52px;height:52px;font-size:20px;">${st.nick?.[0]||'?'}</div>
+    <div><div style="font-size:17px;font-weight:700;">${st.nick||'나'}</div>
+    <div style="font-size:12px;color:var(--muted);">${st.gender==='f'?'여성 👩':'남성 👨'}</div></div></div>`;
+  Object.entries(st.answers).forEach(([sec,qas])=>{
+    h+=`<div class="q-section">${sec}</div>`;
+    qas.forEach(({q,a})=>{h+=`<div class="q-card"><div class="qt">${q}</div><div style="font-size:13px;padding:4px 0;">${a}</div></div>`;});
+  });
+  el.innerHTML=h;
+}
+
+// ── OVERLAY ──────────────────────────────────────
+function showOverlay(topic,dur){
+  document.getElementById('ov-emoji').textContent=topic.e||topic.emoji||'💬';
+  document.getElementById('ov-cat').textContent=topic.c||topic.cat||'';
+  document.getElementById('ov-text').textContent=topic.t||topic.text||topic;
+  document.getElementById('ov-ended').style.display='none';
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('my-status').className='status-pill sp-talk';
+  document.getElementById('my-status').innerHTML='<div class="sdot" style="background:var(--pink);"></div>대화 중';
+  st.timerLeft=(dur||5)*60;
+  updateRing();
+  clearInterval(st.timerInt);
+  st.timerInt=setInterval(()=>{
+    st.timerLeft--;updateRing();
+    if(st.timerLeft<=0){clearInterval(st.timerInt);document.getElementById('ov-ended').style.display='block';}
+  },1000);
+}
+
+function updateRing(){
+  const total=(st.adminDur||5)*60;
+  const ratio=st.timerLeft/Math.max(total,1);
+  document.getElementById('ring-fg').style.strokeDashoffset=276.5*(1-ratio);
+  document.getElementById('ring-num').textContent=fmtTime(st.timerLeft);
+  const el=document.getElementById('ap-timer-num');
+  if(el)el.textContent=fmtTime(st.timerLeft);
+}
+
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('my-status').className='status-pill sp-free';
+  document.getElementById('my-status').innerHTML='<div class="sdot" style="background:var(--teal);"></div>자유 대화 중';
+}
+window.closeOverlay=closeOverlay;
+
+function sendHeart(){closeOverlay();}
+window.sendHeart=sendHeart;
+
+function closeCel(){document.getElementById('match-cel').classList.remove('show');}
+window.closeCel=closeCel;
+
+// ── BACK MODAL ───────────────────────────────────
+function openBackModal(){document.getElementById('back-modal').classList.add('show');}
+function closeBackModal(){document.getElementById('back-modal').classList.remove('show');}
+function confirmBack(){closeBackModal();buildProfile();goScreen('s-profile');}
+window.openBackModal=openBackModal;
+window.closeBackModal=closeBackModal;
+window.confirmBack=confirmBack;
+
+// ── ADMIN PASSWORD ───────────────────────────────
+function openAdmin(){
+  document.getElementById('pw-inp').value='';
+  document.getElementById('pw-error').textContent='';
+  document.getElementById('pw-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('pw-inp').focus(),100);
+}
+window.openAdmin=openAdmin;
+function closePwModal(){document.getElementById('pw-modal').classList.remove('show');}
+function togglePwEye(btn){
+  const inp=document.getElementById('pw-inp');
+  const h=inp.type==='password';
+  inp.type=h?'text':'password';btn.textContent=h?'🙈':'👁';
+}
+function checkPw(){
+  const v=document.getElementById('pw-inp').value;
+  if(v===ADMIN_PW){
+    closePwModal();
+    st.isAdmin=true;
+    goScreen('s-admin');
+    listenGuests();
+    renderAdminHomeScreen();
+  }else{
+    document.getElementById('pw-error').textContent='비밀번호가 올바르지 않아요';
+    document.getElementById('pw-inp').value='';
+    document.getElementById('pw-inp').focus();
+  }
+}
+window.openAdmin=openAdmin;window.closePwModal=closePwModal;
+window.togglePwEye=togglePwEye;window.checkPw=checkPw;
+
+// ── ADMIN HOME SCREEN ────────────────────────────
+function renderAdminHomeScreen(){
+  updateAdminHomeStats();
+  renderAdminHomeTimeline();
+  renderAdminHomeGuests();
+  renderAdminHomeRooms();
+}
+
+function updateAdminHomeStats(){
+  const gs=Object.values(st.guests).filter(g=>g.online!==false);
+  document.getElementById('ags-total').textContent=gs.length;
+  document.getElementById('ags-m').textContent=gs.filter(g=>g.gender==='m').length;
+  document.getElementById('ags-f').textContent=gs.filter(g=>g.gender==='f').length;
+  const matched=new Set();
+  Object.values(st.guests).forEach(g=>{
+    if(g.hearts) Object.entries(g.hearts).forEach(([tid,v])=>{
+      if(v&&st.guests[tid]?.hearts?.[g.id]) matched.add([g.id,tid].sort().join('-'));
+    });
+  });
+  document.getElementById('ags-match').textContent=matched.size;
+  // sync code display
+  const cd=document.getElementById('admin-home-code');
+  if(cd) cd.textContent=st.currentCode||'1212';
+}
+
+function renderAdminHomeGuests(){
+  const el=document.getElementById('admin-home-guests');
+  if(!el) return;
+  const online=Object.values(st.guests).filter(g=>g.online!==false);
+  if(!online.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div>';return;}
+  el.innerHTML=online.map(g=>`
+    <div class="guest-row">
+      <div class="av av-${g.gender}" style="width:28px;height:28px;font-size:11px;">${g.nick[0]}</div>
+      <div style="flex:1;">${g.nick}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:3px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);"></div>
+          <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
+        </div>
+        <button onclick="kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderAdminHomeTimeline(){
+  const el=document.getElementById('admin-home-timeline');
+  if(!el) return;
+  el.innerHTML=TIMELINE.map((t,i)=>{
+    const isDone=t.stepIdx<st.currentStep;
+    const isNow=t.stepIdx===st.currentStep;
+    const isNext=t.stepIdx===st.currentStep+1;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const showTimer=isNow&&t.duration>0;
+    return `<div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-dot ${isDone?'done':isNow?'now':''}"></div>
+        ${i<TIMELINE.length-1?'<div class="tl-line"></div>':''}
+      </div>
+      <div class="tl-content">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tl-time">${t.time}</div>
+          ${showTimer?`<div id="step-countdown" style="font-size:13px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;">${fmtTime(st.stepTimerLeft||t.duration)}</div>`:''}
+        </div>
+        <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
+        <div class="tl-desc">${t.desc}</div>
+        ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
+        ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAdminHomeRooms(){
+  const el=document.getElementById('admin-home-rooms');
+  if(!el) return;
+  const gs=Object.values(st.guests).filter(g=>g.online!==false);
+  const assignment=st.currentRoomAssignment||{};
+  el.innerHTML=ROOMS.map(r=>{
+    const roomGs=gs.filter(g=>Object.keys(assignment).length>0?assignment[g.id]===r.name:false);
+    return `<div class="room-list-card" onclick="openRoomDetail(${r.id})">
+      <div class="rlc-name">${r.name} <span style="font-size:11px;color:var(--muted);font-weight:400;">${roomGs.length}명</span></div>
+      <div class="rlc-members">${roomGs.length
+        ?roomGs.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join('')
+        :'<span style="font-size:12px;color:var(--muted);">배정된 게스트 없음</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openRoomDetail(id){
+  st.adminRoom=id;
+  st.adminPicked=[];
+  const room=ROOMS.find(r=>r.id===id);
+  document.getElementById('room-detail-title').textContent=room.name;
+  document.getElementById('ap-topic-area').style.display='none';
+
+  // 멤버 목록 렌더링
+  const assignment=st.currentRoomAssignment||{};
+  const allGs=Object.values(st.guests).filter(g=>g.online!==false);
+  const hasAssignment=Object.keys(assignment).length>0;
+  const gs=hasAssignment ? allGs.filter(g=>assignment[g.id]===room.name) : allGs;
+
+  const males=gs.filter(g=>g.gender==='m');
+  const females=gs.filter(g=>g.gender==='f');
+  const pairCount=Math.min(males.length,females.length);
+
+  const el=document.getElementById('ap-mem-list');
+  if(!gs.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--muted);padding:10px;">${hasAssignment?'이 룸에 배정된 게스트가 없어요':'아직 입장한 게스트가 없어요'}</div>`;
+  } else {
+    // 페어 미리보기
+    let html='<div style="font-size:12px;color:var(--muted);padding:8px 4px;margin-bottom:4px;">자동 페어링 미리보기</div>';
+    for(let i=0;i<pairCount;i++){
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 6px;background:var(--pink3);border-radius:8px;margin-bottom:6px;">
+        <div class="av av-m" style="width:28px;height:28px;font-size:11px;">${males[i].nick[0]}</div>
+        <div style="font-size:13px;flex:1;">${males[i].nick}</div>
+        <div style="font-size:13px;color:var(--pink);font-weight:700;">↔</div>
+        <div style="font-size:13px;flex:1;text-align:right;">${females[i].nick}</div>
+        <div class="av av-f" style="width:28px;height:28px;font-size:11px;">${females[i].nick[0]}</div>
+      </div>`;
+    }
+    // 페어 안된 사람
+    const unpaired=[...males.slice(pairCount),...females.slice(pairCount)];
+    if(unpaired.length){
+      html+=`<div style="font-size:11px;color:var(--muted);margin-top:8px;">페어 없음: ${unpaired.map(g=>g.nick).join(', ')}</div>`;
+    }
+    el.innerHTML=html;
+  }
+  renderPickedBar();
+  document.getElementById('admin-room-detail-panel').style.display='block';
+}
+window.openRoomDetail=openRoomDetail;
+
+function closeRoomDetail(){
+  document.getElementById('admin-room-detail-panel').style.display='none';
+}
+window.closeRoomDetail=closeRoomDetail;
+
+async function changeCodeFromHome(){
+  const v=document.getElementById('admin-home-code-inp').value.trim();
+  if(!v){alert('코드를 입력해주세요');return;}
+  await setDoc(SESSION_REF(),{code:v},{merge:true});
+  st.currentCode=v;
+  document.getElementById('admin-home-code').textContent=v;
+  document.getElementById('admin-home-code-inp').value='';
+  alert('코드가 변경되었어요: '+v);
+}
+window.changeCodeFromHome=changeCodeFromHome;
+
+// ── ADMIN ────────────────────────────────────────
+function closeAdmin(){
+  document.getElementById('admin-panel').classList.remove('show');
+  if(st.isAdmin) goScreen('s-admin');
+}
+window.closeAdmin=closeAdmin;
+
+async function changeCode(){
+  const v=document.getElementById('ap-code-inp').value.trim();
+  if(!v){alert('코드를 입력해주세요');return;}
+  await setDoc(SESSION_REF(),{code:v},{merge:true});
+  document.getElementById('ap-code-display').textContent=v;
+  document.getElementById('ap-code-inp').value='';
+  alert('코드가 변경되었어요: '+v);
+}
+window.changeCode=changeCode;
+
+function updateAdminStats(){
+  const gs=Object.values(st.guests);
+  const online=gs.filter(g=>g.online!==false);
+  document.getElementById('gs-total').textContent=online.length;
+  document.getElementById('gs-m').textContent=online.filter(g=>g.gender==='m').length;
+  document.getElementById('gs-f').textContent=online.filter(g=>g.gender==='f').length;
+  const matched=new Set();
+  gs.forEach(g=>{
+    if(g.hearts){
+      Object.entries(g.hearts).forEach(([tid,v])=>{
+        if(v&&st.guests[tid]?.hearts?.[g.id]){
+          const pair=[g.id,tid].sort().join('-');
+          matched.add(pair);
+        }
+      });
+    }
+  });
+  document.getElementById('gs-match').textContent=matched.size;
+}
+
+function renderGuestListAdmin(){
+  const el=document.getElementById('guest-list-admin');
+  const online=Object.values(st.guests).filter(g=>g.online!==false);
+  if(!online.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div>';return;}
+  el.innerHTML=online.map(g=>`
+    <div class="guest-row">
+      <div class="av av-${g.gender}" style="width:28px;height:28px;font-size:11px;">${g.nick[0]}</div>
+      <div style="flex:1;">${g.nick}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:3px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);"></div>
+          <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
+        </div>
+        <button onclick="kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderAdminTimeline(){
+  const el=document.getElementById('admin-timeline');
+  el.innerHTML=TIMELINE.map((t,i)=>{
+    const isDone=t.stepIdx<st.currentStep;
+    const isNow=t.stepIdx===st.currentStep;
+    const isNext=t.stepIdx===st.currentStep+1;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const showTimer=isNow&&t.duration>0;
+    return `<div class="tl-row">
+      <div class="tl-left">
+        <div class="tl-dot ${isDone?'done':isNow?'now':''}"></div>
+        ${i<TIMELINE.length-1?'<div class="tl-line"></div>':''}
+      </div>
+      <div class="tl-content">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="tl-time">${t.time}</div>
+          ${showTimer?`<div id="step-countdown" style="font-size:13px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;">${fmtTime(st.stepTimerLeft||t.duration)}</div>`:''}
+        </div>
+        <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
+        <div class="tl-desc">${t.desc}</div>
+        ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
+        ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function startStepTimer(duration){
+  clearInterval(st.stepTimerInt);
+  st.stepTimerLeft=duration;
+  st.stepTimerInt=setInterval(()=>{
+    st.stepTimerLeft--;
+    const el=document.getElementById('step-countdown');
+    if(el) el.textContent=fmtTime(st.stepTimerLeft);
+    if(st.stepTimerLeft<=0){
+      clearInterval(st.stepTimerInt);
+      if(el) el.textContent='00:00';
+    }
+  },1000);
+}
+
+// ── 랜덤 룸 배정 알고리즘 ─────────────────────────
+function assignRooms(round){
+  // round: 1,2,3
+  const guests=Object.values(st.guests).filter(g=>g.online!==false);
+  const males=shuffle(guests.filter(g=>g.gender==='m'));
+  const females=shuffle(guests.filter(g=>g.gender==='f'));
+  const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
+  const assignment={}; // {guestId: roomName}
+
+  // 이전 라운드 배정 이력 가져오기
+  const prevAssignments=st.roomHistory||{}; // {guestId: [room1, room2, ...]}
+
+  // 각 참가자에게 아직 안 간 룸 중에서 배정
+  // 남/여 각각 룸별로 균등하게 나눔
+  const roomSlots={};
+  roomNames.forEach(r=>roomSlots[r]={m:[],f:[]});
+
+  function getBestRoom(guest, gender){
+    const visited=(prevAssignments[guest.id]||[]);
+    // 안 간 룸 우선
+    let candidates=roomNames.filter(r=>!visited.includes(r));
+    if(!candidates.length) candidates=[...roomNames]; // 다 갔으면 전체에서
+    // 이미 만난 사람 적은 룸 우선 선택
+    candidates.sort((a,b)=>{
+      const metInA=roomSlots[a][gender==='m'?'f':'m'].filter(id=>(prevAssignments[guest.id]||[]).includes(id)).length;
+      const metInB=roomSlots[b][gender==='m'?'f':'m'].filter(id=>(prevAssignments[guest.id]||[]).includes(id)).length;
+      // 인원 적은 룸 우선, 그 다음 안 만난 사람 많은 룸
+      const sizeA=roomSlots[a][gender].length;
+      const sizeB=roomSlots[b][gender].length;
+      return sizeA-sizeB || metInA-metInB;
+    });
+    return candidates[0];
+  }
+
+  [...males,...females].forEach(g=>{
+    const room=getBestRoom(g,g.gender);
+    roomSlots[room][g.gender].push(g.id);
+    assignment[g.id]=room;
+  });
+
+  // 히스토리 업데이트
+  if(!st.roomHistory) st.roomHistory={};
+  Object.entries(assignment).forEach(([id,room])=>{
+    if(!st.roomHistory[id]) st.roomHistory[id]=[];
+    st.roomHistory[id].push(room);
+  });
+
+  return assignment;
+}
+
+async function startStep(idx){
+  st.currentStep=idx;
+  if(idx>=3) st.heartsEnabled=true;
+
+  // 해당 단계 타이머 시작
+  const tl=TIMELINE.find(t=>t.stepIdx===idx);
+  if(tl&&tl.duration>0) startStepTimer(tl.duration);
+
+  let assignment=null;
+  if(idx>=3&&idx<=5){
+    const round=idx-2;
+    assignment=assignRooms(round);
+    st.currentRoomAssignment=assignment; // 룸 관리 표시용
+  }
+
+  await setDoc(SESSION_REF(),{
+    step:idx,
+    stepStartedAt:serverTimestamp(),
+    ...(assignment?{roomAssignment:assignment}:{}),
+    ...(st.roomHistory?{roomHistory:st.roomHistory}:{})
+  },{merge:true});
+
+  renderAdminHomeTimeline();
+  renderAdminHomeRooms();
+
+  if(assignment){
+    const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
+    const summary=roomNames.map(r=>{
+      const members=Object.entries(assignment).filter(([,room])=>room===r).map(([id])=>st.guests[id]?.nick||id);
+      return `${r}: ${members.join(', ')||'없음'}`;
+    }).join('\n');
+    alert(`룸 배정 완료!\n\n${summary}`);
+  } else {
+    alert('단계가 시작되었어요!');
+  }
+}
+window.startStep=startStep;
+
+async function skipToStep(idx){
+  if(confirm(idx+'단계를 건너뛰시겠어요?')){
+    st.currentStep=idx+1;
+    if(idx>=3) st.heartsEnabled=true;
+    await setDoc(SESSION_REF(),{step:idx},{merge:true});
+    renderAdminHomeTimeline();
+    renderAdminHomeRooms();
+  }
+}
+window.skipToStep=skipToStep;
+
+function renderAdminHome(){
+  document.getElementById('ap-home').style.display='block';
+  document.getElementById('ap-room-detail').style.display='none';
+  document.getElementById('ap-running').style.display='none';
+  updateAdminStats();
+  renderAdminTimeline();
+  const el=document.getElementById('ap-room-list');
+  const gs=Object.values(st.guests).filter(g=>g.online!==false);
+  const assignment=st.currentRoomAssignment||{};
+
+  el.innerHTML=ROOMS.map(r=>{
+    // 이 룸에 배정된 게스트만 필터
+    const roomGuests=gs.filter(g=>assignment[g.id]===r.name);
+    return `
+    <div class="room-list-card" onclick="selectAdminRoom(${r.id})">
+      <div class="rlc-name">${r.name} <span class="room-count" style="font-size:11px;color:var(--muted);font-weight:400;">${roomGuests.length}명</span></div>
+      <div class="rlc-members">${roomGuests.length
+        ? roomGuests.map(g=>`<span class="mem-chip">${g.gender==='m'?'남':'여'} ${g.nick}</span>`).join('')
+        : '<span style="font-size:12px;color:var(--muted);">배정된 게스트 없음</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+window.renderAdminHome=renderAdminHome;
+
+function selectAdminRoom(id){
+  st.adminRoom=id;st.adminPicked=[];
+  document.getElementById('ap-home').style.display='none';
+  document.getElementById('ap-room-detail').style.display='block';
+  document.getElementById('ap-pick-actions').style.display='block';
+  document.getElementById('ap-topic-area').style.display='none';
+  const room=ROOMS.find(r=>r.id===id);
+  document.getElementById('ap-room-lbl').textContent=room.name+' 참가자';
+  renderAdminMembers();
+}
+window.selectAdminRoom=selectAdminRoom;
+
+function renderAdminMembers(){
+  const assignment=st.currentRoomAssignment||{};
+  const room=ROOMS.find(r=>r.id===st.adminRoom);
+  // 배정된 게스트만 필터, 배정 전이면 전체 게스트 표시
+  const allGs=Object.values(st.guests).filter(g=>g.online!==false);
+  const hasAssignment=Object.keys(assignment).length>0;
+  const gs=hasAssignment
+    ? allGs.filter(g=>assignment[g.id]===room?.name)
+    : allGs;
+  const el=document.getElementById('ap-mem-list');
+  if(!gs.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--muted);padding:10px;">${hasAssignment?'이 룸에 배정된 게스트가 없어요':'아직 입장한 게스트가 없어요'}</div>`;
+    renderPickedBar();return;
+  }
+  el.innerHTML=gs.map(g=>`
+    <div class="mem-row ${st.adminPicked.find(p=>p.id===g.id)?'picked':''}" onclick="togglePick('${g.id}','${g.nick}','${g.gender}')">
+      <div class="av av-${g.gender}" style="width:30px;height:30px;font-size:12px;">${g.nick[0]}</div>
+      <div style="flex:1;font-size:13px;">${g.nick}</div>
+      <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
+      ${st.adminPicked.find(p=>p.id===g.id)?'<div class="pick-badge">지목</div>':''}
+    </div>`).join('');
+  renderPickedBar();
+}
+
+function togglePick(id,nick,gender){
+  const idx=st.adminPicked.findIndex(p=>p.id===id);
+  if(idx>=0)st.adminPicked.splice(idx,1);
+  else if(st.adminPicked.length<2)st.adminPicked.push({id,name:nick,g:gender});
+  renderAdminMembers();
+}
+window.togglePick=togglePick;
+
+function clearPicked(){st.adminPicked=[];renderAdminMembers();}
+window.clearPicked=clearPicked;
+
+function renderPickedBar(){
+  const chips=document.getElementById('ap-picked-chips');
+  if(!st.adminPicked.length){chips.innerHTML='<span style="font-size:12px;color:var(--muted);">아직 없음</span>';return;}
+  chips.innerHTML=st.adminPicked.map((p,i)=>`
+    <div class="pb-chip"><div class="av av-${p.g}" style="width:20px;height:20px;font-size:9px;">${p.name[0]}</div>${p.name}</div>
+    ${i===0&&st.adminPicked.length===2?'<div class="vs-tag">vs</div>':''}`).join('');
+}
+
+function showTopicArea(){
+  if(st.adminPicked.length<2){alert('2명을 선택해주세요');return;}
+  shuffleTopic();
+  document.getElementById('ap-pick-actions').style.display='none';
+  document.getElementById('ap-topic-area').style.display='block';
+  document.getElementById('ap-pair-names').textContent=st.adminPicked.map(p=>p.name).join(' ↔ ');
+}
+window.showTopicArea=showTopicArea;
+
+function shuffleTopic(){
+  st.adminTopic=TOPICS[Math.floor(Math.random()*TOPICS.length)];
+  document.getElementById('apt-emoji').textContent=st.adminTopic.e;
+  document.getElementById('apt-cat').textContent=st.adminTopic.c;
+  document.getElementById('apt-text').textContent=st.adminTopic.t;
+}
+window.shuffleTopic=shuffleTopic;
+
+function setDur(m,el){
+  st.adminDur=m;
+  document.querySelectorAll('.dp').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+}
+window.setDur=setDur;
+
+async function autoPairAndSend(){
+  const room=ROOMS.find(r=>r.id===st.adminRoom);
+  const assignment=st.currentRoomAssignment||{};
+  const allGs=Object.values(st.guests).filter(g=>g.online!==false);
+  const hasAssignment=Object.keys(assignment).length>0;
+  const gs=hasAssignment ? allGs.filter(g=>assignment[g.id]===room.name) : allGs;
+
+  const males=shuffle(gs.filter(g=>g.gender==='m'));
+  const females=shuffle(gs.filter(g=>g.gender==='f'));
+  const pairCount=Math.min(males.length,females.length);
+
+  if(pairCount===0){alert('페어링할 수 있는 남녀가 없어요');return;}
+
+  // 각 페어에게 랜덤 주제 전송
+  let sent=0;
+  for(let i=0;i<pairCount;i++){
+    const topic=TOPICS[Math.floor(Math.random()*TOPICS.length)];
+    const pair=[males[i],females[i]];
+    for(const p of pair){
+      try{
+        await updateDoc(doc(db,'guests',p.id),{
+          topicAlert:{e:topic.e,c:topic.c,t:topic.t},
+          topicDur:st.adminDur||5,
+          topicSeen:false
+        });
+        sent++;
+      }catch(e){console.log('전송 실패',e);}
+    }
+  }
+
+  // 타이머 시작
+  st.timerLeft=(st.adminDur||5)*60;
+  clearInterval(st.timerInt);
+  st.timerInt=setInterval(()=>{
+    st.timerLeft--;
+    const el=document.getElementById('ap-timer-num');
+    if(el) el.textContent=fmtTime(st.timerLeft);
+    if(st.timerLeft<=0) clearInterval(st.timerInt);
+  },1000);
+
+  const apt=document.getElementById('apr-topic');
+  apt.innerHTML=`<div style="font-size:14px;font-weight:500;color:var(--text);">${pairCount}쌍에게 각각 랜덤 주제가 전송됐어요 🎉</div>`;
+  document.getElementById('ap-pair-lbl').textContent=`${room.name} — ${pairCount}쌍 대화 중`;
+  document.getElementById('admin-room-detail-panel').style.display='none';
+  document.getElementById('admin-running-panel').style.display='block';
+}
+window.autoPairAndSend=autoPairAndSend;
+
+async function sendMatch(){
+  const isAdminHome=document.getElementById('s-admin').classList.contains('on');
+  if(isAdminHome){
+    document.getElementById('admin-room-detail-panel').style.display='none';
+    document.getElementById('admin-running-panel').style.display='block';
+  } else {
+    document.getElementById('ap-room-detail').style.display='none';
+    document.getElementById('ap-running').style.display='block';
+  }
+  const apt=document.getElementById('apr-topic');
+  apt.innerHTML=`<div class="td-emoji">${st.adminTopic.e}</div><div class="td-cat">${st.adminTopic.c}</div><div class="td-text">${st.adminTopic.t}</div>`;
+  document.getElementById('ap-pair-lbl').textContent=st.adminPicked.map(p=>p.name).join(' ↔ ')+' 대화 중';
+  st.timerLeft=st.adminDur*60;
+  clearInterval(st.timerInt);
+  st.timerInt=setInterval(()=>{
+    st.timerLeft--;
+    const el=document.getElementById('ap-timer-num');
+    if(el)el.textContent=fmtTime(st.timerLeft);
+    if(st.timerLeft<=0)clearInterval(st.timerInt);
+  },1000);
+  for(const p of st.adminPicked){
+    try{
+      await updateDoc(doc(db,'guests',p.id),{
+        topicAlert:{e:st.adminTopic.e,c:st.adminTopic.c,t:st.adminTopic.t},
+        topicDur:st.adminDur,
+        topicSeen:false
+      });
+    }catch(e){console.log('send topic error',e);}
+  }
+}
+window.sendMatch=sendMatch;
+
+function stopTimer(){
+  clearInterval(st.timerInt);
+  document.getElementById('admin-running-panel').style.display='none';
+  renderAdminHomeScreen();
+}
+window.stopTimer=stopTimer;
+
+function backToHome(){renderAdminHome();}
+window.backToHome=backToHome;
+
+function backTopicToPick(){
+  document.getElementById('ap-topic-area').style.display='none';
+  document.getElementById('ap-pick-actions').style.display='block';
+}
+window.backTopicToPick=backTopicToPick;
+
+window.goScreen=goScreen;
+window.submitCode=submitCode;
+
+</script>
+</body>
+</html>
