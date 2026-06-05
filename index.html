@@ -478,7 +478,7 @@ textarea{resize:none;line-height:1.5;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ── FIREBASE CONFIG ──────────────────────────────
 const firebaseConfig = {
@@ -683,7 +683,19 @@ function listenSession(){
 function listenMyDoc(){
   if(!st.myId)return;
   onSnapshot(doc(db,'guests',st.myId),(snap)=>{
-    if(!snap.exists())return;
+    // 문서가 삭제되면 강퇴된 것
+    if(!snap.exists()){
+      clearInterval(st.heartbeatInt);
+      clearInterval(st.timerInt);
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+      document.getElementById('app').innerHTML=`
+        <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:#0f0f0f;">
+          <div style="font-size:48px;margin-bottom:16px;">🚫</div>
+          <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">퇴장 처리되었습니다</div>
+          <div style="font-size:14px;color:#666;">관리자에 의해 강퇴되었어요</div>
+        </div>`;
+      return;
+    }
     const d=snap.data();
     if(d.topicAlert&&!d.topicSeen){
       showOverlay(d.topicAlert,d.topicDur||5);
@@ -698,7 +710,6 @@ function listenGuests(){
     const now=Date.now();
     snap.forEach(d=>{
       const data=d.data();
-      // lastSeen 기준 30초 이상 지나면 오프라인 처리
       const lastSeen=data.lastSeen?.toMillis?.()|| now;
       const isOnline=data.online!==false&&(now-lastSeen)<30000;
       st.guests[d.id]={...data,online:isOnline};
@@ -708,6 +719,16 @@ function listenGuests(){
     renderPeople();
   });
 }
+
+// ── 강퇴 ─────────────────────────────────────────
+async function kickGuest(id,nick){
+  if(!confirm(`${nick}님을 강퇴하시겠어요?`))return;
+  try{
+    await deleteDoc(doc(db,'guests',id));
+    alert(nick+'님을 강퇴했어요.');
+  }catch(e){console.error('강퇴 실패',e);}
+}
+window.kickGuest=kickGuest;
 
 // ── TABS ─────────────────────────────────────────
 function switchTab(id){
@@ -901,15 +922,18 @@ function updateAdminStats(){
 
 function renderGuestListAdmin(){
   const el=document.getElementById('guest-list-admin');
-  const gs=Object.values(st.guests);
-  if(!gs.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div>';return;}
-  el.innerHTML=gs.map(g=>`
+  const online=Object.values(st.guests).filter(g=>g.online!==false);
+  if(!online.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px;">아직 입장한 게스트가 없어요</div>';return;}
+  el.innerHTML=online.map(g=>`
     <div class="guest-row">
       <div class="av av-${g.gender}" style="width:28px;height:28px;font-size:11px;">${g.nick[0]}</div>
       <div style="flex:1;">${g.nick}</div>
-      <div style="display:flex;align-items:center;gap:4px;">
-        <div style="width:6px;height:6px;border-radius:50%;background:${g.online!==false?'var(--teal)':'#ccc'};"></div>
-        <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:3px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);"></div>
+          <div style="font-size:11px;color:var(--muted);">${g.gender==='m'?'남':'여'}</div>
+        </div>
+        <button onclick="kickGuest('${g.id}','${g.nick}')" style="padding:3px 8px;border-radius:6px;border:1px solid #FFCDD2;background:#FFF0F0;color:#E24B4A;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">강퇴</button>
       </div>
     </div>`).join('');
 }
