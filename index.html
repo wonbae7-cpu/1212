@@ -875,11 +875,13 @@ async function submitProfile(){
     renderPeople();
     listenMyDoc();
     listenSession();
+    listenGuestsForUser(); // 게스트도 다른 게스트 실시간 감지
   } else {
     document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
     goScreen('s-wait');
     listenSession();
     listenMyDoc();
+    listenGuestsForUser();
   }
 }
 window.submitProfile=submitProfile;
@@ -1023,7 +1025,22 @@ function listenMyDoc(){
   });
 }
 
-function listenGuests(){
+// ── 게스트용 실시간 참가자 리스너 ────────────────────
+function listenGuestsForUser(){
+  onSnapshot(query(GUESTS_REF(),orderBy('joinedAt')),(snap)=>{
+    const now=Date.now();
+    snap.forEach(d=>{
+      const data=d.data();
+      const lastSeen=data.lastSeen?.toMillis?.()||now;
+      const isOnline=data.online!==false&&(now-lastSeen)<30000;
+      st.guests[d.id]={...data,online:isOnline};
+    });
+    // 삭제된 게스트 제거
+    const ids=snap.docs.map(d=>d.id);
+    Object.keys(st.guests).forEach(id=>{if(!ids.includes(id))delete st.guests[id];});
+    renderPeople();
+  });
+}
   onSnapshot(query(GUESTS_REF(),orderBy('joinedAt')),(snap)=>{
     st.guests={};
     const now=Date.now();
