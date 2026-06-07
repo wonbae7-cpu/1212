@@ -1684,10 +1684,11 @@ window.sendMatch=sendMatch;
 
 async function stopTimer(){
   clearInterval(st.timerInt);
-  // 지목된 게스트들에게 종료 신호 전송
-  for(const p of st.adminPicked){
+  // topicSeen:false 인 모든 게스트에게 종료 신호 전송
+  const allGuests=Object.values(st.guests);
+  for(const g of allGuests){
     try{
-      await updateDoc(doc(db,'guests',p.id),{
+      await updateDoc(doc(db,'guests',g.id),{
         topicAlert:null,
         topicSeen:true,
         topicEnded:true
