@@ -72,7 +72,7 @@ textarea{resize:none;line-height:1.5;}
 .nav-tabs{display:flex;}
 .nav-tab{padding:10px 14px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
 .nav-tab.on{color:var(--pink);border-bottom-color:var(--pink);}
-.tab-body{display:none;padding:18px 20px 80px;overflow-y:auto;flex:1;}
+.tab-body{display:none;padding:18px 20px 80px;overflow-y:auto;}
 .tab-body.on{display:block;}
 .pc{background:#1a1a1a;border-radius:var(--r);border:1px solid #2a2a2a;padding:14px;margin-bottom:10px;}
 .pc-name{font-size:15px;font-weight:600;color:#fff;}
@@ -329,10 +329,7 @@ textarea{resize:none;line-height:1.5;}
         <label class="field-lbl" style="color:#555;">전화번호 (선택)</label>
         <input type="text" id="inp-phone" placeholder="ex) 010-0000-0000" inputmode="numeric" style="background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:12px;">
       </div>
-      <div style="font-size:12px;color:#555;line-height:1.8;margin-bottom:20px;">
-        * 공개를 원치 않으시면 안 적으셔도 됩니다.<br>
-        * WR1은 따로 연락처를 저장하지 않습니다.
-      </div>
+      <div style="font-size:12px;color:#555;line-height:1.8;margin-bottom:16px;">* 공개를 원치 않으시면 안 적으셔도 됩니다.<br>* WR1은 따로 연락처를 저장하지 않습니다.</div>
       <div style="margin-top:auto;padding-bottom:40px;">
         <button class="btn" onclick="saveContact()" style="background:#22c55e;color:#000;font-weight:700;border-radius:var(--r2);margin-bottom:10px;">저장하기</button>
         <button class="btn" onclick="goToWait()" style="background:transparent;color:#555;border:1px solid #2a2a2a;border-radius:var(--r2);">다음으로 →</button>
@@ -356,7 +353,7 @@ textarea{resize:none;line-height:1.5;}
 </div>
 
 <!-- MAIN APP -->
-<div class="screen" id="s-main" style="background:#0f0f0f;flex-direction:column;height:100vh;overflow:hidden;">
+<div class="screen" id="s-main" style="background:#0f0f0f;">
   <div class="top-bar" style="background:#0f0f0f;border-bottom:1px solid #1e1e1e;padding:14px 20px 0;">
     <div class="tb-head" style="margin-bottom:12px;">
       <button onclick="openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:#555;font-family:'Pretendard',sans-serif;z-index:1;">
@@ -1445,7 +1442,6 @@ function showContactTab(){
   document.getElementById('contact-tab-content').style.display='flex';
   document.getElementById('tab-contact-btn').style.color='#22c55e';
   document.getElementById('tab-contact-btn').style.borderBottomColor='#22c55e';
-  // 프로필은 완료된 단계이므로 초록 유지
   document.getElementById('tab-profile-btn').style.color='#22c55e';
   document.getElementById('tab-profile-btn').style.borderBottomColor='#22c55e';
 }
