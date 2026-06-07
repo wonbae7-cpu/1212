@@ -1000,7 +1000,12 @@ function listenSession(){
         const existingBanner=document.getElementById('room-assign-banner');
         const existingRoom=existingBanner?.querySelector('[data-room]')?.dataset?.room;
         if(!existingBanner||existingRoom!==myRoom||remaining>0){
-          showRoomAssignment(myRoom, remaining);
+          // 프리토킹이면 특별 메시지
+          if(d.step===6){
+            showRoomAssignment('Class ROOM 1 🎉 전체 모임!', remaining);
+          } else {
+            showRoomAssignment(myRoom, remaining);
+          }
         }
       }
     }
@@ -1719,7 +1724,13 @@ async function startStep(idx){
   if(idx>=3&&idx<=5){
     const round=idx-2;
     assignment=assignRooms(round);
-    st.currentRoomAssignment=assignment; // 룸 관리 표시용
+    st.currentRoomAssignment=assignment;
+  } else if(idx===6){
+    // 프리토킹: 모든 참가자 Class ROOM 1으로
+    const guests=Object.values(st.guests).filter(g=>g.online!==false);
+    assignment={};
+    guests.forEach(g=>{ assignment[g.id]='Class ROOM 1'; });
+    st.currentRoomAssignment=assignment;
   }
 
   await setDoc(SESSION_REF(),{
