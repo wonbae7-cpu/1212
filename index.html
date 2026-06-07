@@ -1134,6 +1134,31 @@ window.closeBackModal=closeBackModal;
 window.confirmBack=confirmBack;
 
 // ── ADMIN PASSWORD ───────────────────────────────
+async function restoreAdminSession(){
+  try{
+    const snap=await getDoc(SESSION_REF());
+    if(snap.exists&&snap.data()){
+      const d=snap.data();
+      // 세션 상태 복원
+      if(d.step!==undefined) st.currentStep=d.step;
+      if(d.roomAssignment) st.currentRoomAssignment=d.roomAssignment;
+      if(d.roomHistory) st.roomHistory=d.roomHistory;
+      if(d.step>=3) st.heartsEnabled=true;
+      // 타이머 복원
+      if(d.stepStartedAt&&d.step>=3&&d.step<=6){
+        const tl=TIMELINE.find(t=>t.stepIdx===d.step);
+        if(tl&&tl.duration>0){
+          const elapsed=Math.floor((Date.now()-d.stepStartedAt.toMillis())/1000);
+          st.stepTimerLeft=Math.max(0,tl.duration-elapsed);
+          if(st.stepTimerLeft>0) startStepTimer(null, st.stepTimerLeft);
+        }
+      }
+      console.log('✅ 세션 복원:', d.step, '단계');
+    }
+  }catch(e){console.log('세션 복원 실패:', e);}
+  renderAdminHomeScreen();
+}
+
 function openAdmin(){
   document.getElementById('pw-inp').value='';
   document.getElementById('pw-error').textContent='';
@@ -1154,7 +1179,8 @@ function checkPw(){
     st.isAdmin=true;
     goScreen('s-admin');
     listenGuests();
-    renderAdminHomeScreen();
+    // Firebase에서 세션 상태 복원
+    restoreAdminSession();
   }else{
     document.getElementById('pw-error').textContent='비밀번호가 올바르지 않아요';
     document.getElementById('pw-inp').value='';
@@ -1397,9 +1423,9 @@ function renderAdminTimeline(){
   }).join('');
 }
 
-function startStepTimer(duration){
+function startStepTimer(duration, remaining){
   clearInterval(st.stepTimerInt);
-  st.stepTimerLeft=duration;
+  st.stepTimerLeft=remaining||duration;
   st.stepTimerInt=setInterval(()=>{
     st.stepTimerLeft--;
     const el=document.getElementById('step-countdown');
