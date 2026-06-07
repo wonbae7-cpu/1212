@@ -819,17 +819,22 @@ function listenSession(){
       if(document.getElementById('s-wait').classList.contains('on')) goScreen('s-main');
       renderPeople();
     }
-    // 룸 배정 정보 수신
-    if(d.roomAssignment){
+    // 룸 배정 정보 수신 - 항상 체크
+    if(d.roomAssignment&&st.myId){
       st.currentRoomAssignment=d.roomAssignment;
-      if(st.myId&&d.roomAssignment[st.myId]){
-        // 남은 시간 계산
+      const myRoom=d.roomAssignment[st.myId];
+      if(myRoom){
         const tl=TIMELINE.find(t=>t.stepIdx===d.step);
         const duration=tl?.duration||20*60;
         const startedAt=d.stepStartedAt?.toMillis?.()||Date.now();
         const elapsed=Math.floor((Date.now()-startedAt)/1000);
         const remaining=Math.max(0, duration-elapsed);
-        showRoomAssignment(d.roomAssignment[st.myId], remaining);
+        // 배너가 없거나 룸이 바뀌었을 때만 갱신
+        const existingBanner=document.getElementById('room-assign-banner');
+        const existingRoom=existingBanner?.querySelector('[data-room]')?.dataset?.room;
+        if(!existingBanner||existingRoom!==myRoom||remaining>0){
+          showRoomAssignment(myRoom, remaining);
+        }
       }
     }
     if(d.code){document.getElementById('ap-code-display').textContent=d.code;}
@@ -850,7 +855,7 @@ function showRoomAssignment(roomName, duration){
   banner.id='room-assign-banner';
   banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:500;max-width:430px;margin:0 auto;';
   banner.innerHTML=`
-    <div style="background:var(--pink);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;animation:slideDown .3s ease;">
+    <div data-room="${roomName}" style="background:var(--pink);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;animation:slideDown .3s ease;">
       <div>
         <div style="font-size:11px;font-weight:500;opacity:.8;margin-bottom:3px;">📍 지금 이동할 룸</div>
         <div style="font-size:22px;font-weight:700;">${roomName}</div>
