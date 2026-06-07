@@ -451,23 +451,6 @@ textarea{resize:none;line-height:1.5;}
   </div>
 </div>
 
-<!-- HEART CONFIRM MODAL -->
-<div id="heart-modal" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;">
-  <div style="background:var(--white);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:320px;text-align:center;animation:fadeUp .2s ease;">
-    <div style="font-size:32px;margin-bottom:12px;">💗</div>
-    <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">하트를 사용하시겠습니까?</div>
-    <div style="font-size:12px;color:#E24B4A;background:#FFF0F0;border-radius:8px;padding:10px 12px;margin-bottom:20px;line-height:1.6;text-align:left;">
-      ⚠️ 주의사항<br>
-      · 룸 1개당 하트 1개입니다<br>
-      · 한번 사용하면 돌이킬 수 없습니다
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <button onclick="cancelHeart()" style="padding:13px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:inherit;">아니오</button>
-      <button onclick="confirmHeart()" style="padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--pink);color:#fff;font-family:inherit;">예</button>
-    </div>
-  </div>
-</div>
-
 <!-- BACK CONFIRM MODAL -->
 <div id="back-modal">
   <div class="back-box">
@@ -628,7 +611,24 @@ textarea{resize:none;line-height:1.5;}
   </div>
 </div>
 
+<!-- HEART CONFIRM MODAL -->
+<div id="heart-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:320px;text-align:center;animation:fadeUp .2s ease;">
+    <div style="font-size:32px;margin-bottom:12px;">💗</div>
+    <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">하트를 사용하시겠습니까?</div>
+    <div style="font-size:12px;color:#E24B4A;background:#FFF0F0;border-radius:8px;padding:10px 12px;margin-bottom:20px;line-height:1.6;text-align:left;">
+      ⚠️ 주의사항<br>
+      · 룸 1개당 하트 1개입니다<br>
+      · 한번 사용하면 돌이킬 수 없습니다
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button onclick="cancelHeart()" style="padding:13px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:inherit;">아니오</button>
+      <button onclick="confirmHeart()" style="padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--pink);color:#fff;font-family:inherit;">예</button>
+    </div>
+  </div>
 </div>
+
+</div><!-- #app end -->
 
 <!-- 스플래시 독립 처리 (모듈 로딩과 무관) -->
 <script>
