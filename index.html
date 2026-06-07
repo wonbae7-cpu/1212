@@ -14,7 +14,7 @@
   --text:#1a1a1a;--muted:#888;--bg:#f5f5f3;--white:#fff;
   --border:#e8e4df;--border2:#d0ccc6;--r:14px;--r2:24px;
 }
-html,body{height:100%;background:var(--bg);font-family:'Pretendard',sans-serif;color:var(--text);}
+html,body{height:100%;background:var(--bg);font-family:'Pretendard',sans-serif;color:var(--text);overflow:hidden;}
 #app{max-width:430px;margin:0 auto;min-height:100vh;background:#0f0f0f;position:relative;overflow:hidden;}
 .screen{display:none;min-height:100vh;flex-direction:column;}
 .screen.on{display:flex;}
@@ -877,7 +877,7 @@ const GUESTS_REF=()=>collection(db,'guests');
 
 // ── UTILS ────────────────────────────────────────
 function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
-function _goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function _goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));const el=document.getElementById(id);el.classList.add('on');el.scrollTop=0;window.scrollTo(0,0);}
 function goScreen(id){_goScreen(id);}
 window.goScreen=goScreen;
 function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
