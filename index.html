@@ -1813,7 +1813,8 @@ async function startNewEvent(){
   st.currentRoomAssignment={};
   st.roomHistory={};
   st.guests={};
-  alert('새 모임이 시작됐어요!\n입장 코드: 1212');
+  clearInterval(st.stepTimerInt);
+  clearInterval(st.roomBannerTimer);
   renderAdminHomeScreen();
 }
 window.startNewEvent=startNewEvent;
