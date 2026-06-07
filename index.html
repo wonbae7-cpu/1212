@@ -330,7 +330,8 @@ textarea{resize:none;line-height:1.5;}
         <input type="text" id="inp-phone" placeholder="ex) 010-0000-0000" inputmode="numeric" style="background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:12px;">
       </div>
       <div style="margin-top:auto;padding-bottom:40px;">
-        <button class="btn" onclick="saveContact()" style="background:#22c55e;color:#000;font-weight:700;border-radius:var(--r2);">저장하기</button>
+        <button class="btn" onclick="saveContact()" style="background:#22c55e;color:#000;font-weight:700;border-radius:var(--r2);margin-bottom:10px;">저장하기</button>
+        <button class="btn" onclick="goToWait()" style="background:transparent;color:#555;border:1px solid #2a2a2a;border-radius:var(--r2);">다음으로 →</button>
       </div>
     </div>
     </div>
@@ -395,9 +396,33 @@ textarea{resize:none;line-height:1.5;}
   <div class="tab-body" id="tab-timeline" style="background:#0f0f0f;">
     <div id="guest-timeline"></div>
   </div>
-  <div class="tab-body" id="tab-me" style="background:#0f0f0f;">
+  <div class="tab-body" id="tab-me" style="background:#0f0f0f;padding:0;">
     <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
-    <div id="my-prof-view"></div>
+    <!-- 내 프로필 서브탭 -->
+    <div style="display:flex;border-bottom:1px solid #1e1e1e;">
+      <button id="me-sub-profile" onclick="switchMeTab('profile')" style="flex:1;padding:12px;font-size:13px;font-weight:600;color:#22c55e;border:none;border-bottom:2px solid #22c55e;background:transparent;cursor:pointer;font-family:'Pretendard',sans-serif;">내 프로필</button>
+      <button id="me-sub-contact" onclick="switchMeTab('contact')" style="flex:1;padding:12px;font-size:13px;font-weight:500;color:#555;border:none;border-bottom:2px solid transparent;background:transparent;cursor:pointer;font-family:'Pretendard',sans-serif;">연락처</button>
+    </div>
+    <div id="me-profile-view" style="padding:18px 20px;overflow-y:auto;">
+      <div id="my-prof-view"></div>
+    </div>
+    <div id="me-contact-view" style="display:none;padding:24px 20px;overflow-y:auto;">
+      <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;">연락처 공개</div>
+      <div style="font-size:13px;color:#555;margin-bottom:24px;">매칭된 상대에게 공개할 연락처예요</div>
+      <div class="field-g">
+        <label class="field-lbl" style="color:#555;">카카오톡 ID</label>
+        <input type="text" id="main-inp-kakao" placeholder="ex) kakao_id" style="background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:12px;">
+      </div>
+      <div class="field-g">
+        <label class="field-lbl" style="color:#555;">인스타그램</label>
+        <input type="text" id="main-inp-insta" placeholder="ex) @instagram_id" style="background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:12px;">
+      </div>
+      <div class="field-g">
+        <label class="field-lbl" style="color:#555;">전화번호 (선택)</label>
+        <input type="text" id="main-inp-phone" placeholder="ex) 010-0000-0000" inputmode="numeric" style="background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:12px;">
+      </div>
+      <button class="btn" onclick="saveMainContact()" style="background:#22c55e;color:#000;font-weight:700;border-radius:var(--r2);margin-top:8px;">저장하기</button>
+    </div>
   </div>
   <button id="admin-fab" onclick="openAdmin()" style="background:#22c55e;color:#000;">⚙</button>
 </div>
@@ -1039,11 +1064,37 @@ async function submitProfile(){
         }
       }
     }catch(e){console.log('룸 배정 복원 실패',e);}
+    goScreen('s-profile');
+    // 연락처 탭으로 이동
+    setTimeout(()=>showContactTab(),100);
+    return;
+  }
+
+  if(st.currentStep>=3){
+    try{
+      const sessionSnap=await getDoc(SESSION_REF());
+      if(sessionSnap.exists&&sessionSnap.data()){
+        const sd=sessionSnap.data();
+        if(sd.roomAssignment){
+          st.currentRoomAssignment=sd.roomAssignment;
+          if(!sd.roomAssignment[st.myId]){
+            const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
+            const roomCounts={};
+            roomNames.forEach(r=>roomCounts[r]=0);
+            Object.values(sd.roomAssignment).forEach(r=>{if(roomCounts[r]!==undefined)roomCounts[r]++;});
+            const myRoom=roomNames.sort((a,b)=>roomCounts[a]-roomCounts[b])[0];
+            const newAssignment={...sd.roomAssignment,[st.myId]:myRoom};
+            await setDoc(SESSION_REF(),{roomAssignment:newAssignment},{merge:true});
+            st.currentRoomAssignment=newAssignment;
+          }
+        }
+      }
+    }catch(e){console.log('룸 배정 복원 실패',e);}
     goScreen('s-main');
     renderPeople();
     listenMyDoc();
     listenSession();
-    listenGuestsForUser(); // 게스트도 다른 게스트 실시간 감지
+    listenGuestsForUser();
   } else {
     document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
     goScreen('s-wait');
@@ -1143,12 +1194,7 @@ function showRoomAssignment(roomName, duration){
     </div>`;
   document.body.appendChild(banner);
 
-  // 배너 높이만큼 상단바 밀어내기
-  setTimeout(()=>{
-    const h=banner.offsetHeight;
-    const topBar=document.querySelector('#s-main .top-bar');
-    if(topBar) topBar.style.paddingTop=(h+14)+'px';
-  },50);
+  // 배너가 떠있는 동안 아무것도 밀지 않음 (fixed position)
 
   // 타이머 시작
   if(duration>0){
@@ -1352,8 +1398,38 @@ function renderGuestTimeline(){
 }
 window.renderGuestTimeline=renderGuestTimeline;
 
+function switchMeTab(tab){
+  const isProfile=tab==='profile';
+  document.getElementById('me-profile-view').style.display=isProfile?'block':'none';
+  document.getElementById('me-contact-view').style.display=isProfile?'none':'block';
+  document.getElementById('me-sub-profile').style.color=isProfile?'#22c55e':'#555';
+  document.getElementById('me-sub-profile').style.borderBottomColor=isProfile?'#22c55e':'transparent';
+  document.getElementById('me-sub-contact').style.color=isProfile?'#555':'#22c55e';
+  document.getElementById('me-sub-contact').style.borderBottomColor=isProfile?'transparent':'#22c55e';
+  if(!isProfile&&st.contact){
+    document.getElementById('main-inp-kakao').value=st.contact.kakao||'';
+    document.getElementById('main-inp-insta').value=st.contact.insta||'';
+    document.getElementById('main-inp-phone').value=st.contact.phone||'';
+  }
+}
+window.switchMeTab=switchMeTab;
+
+async function saveMainContact(){
+  st.contact={
+    kakao:document.getElementById('main-inp-kakao')?.value.trim()||'',
+    insta:document.getElementById('main-inp-insta')?.value.trim()||'',
+    phone:document.getElementById('main-inp-phone')?.value.trim()||''
+  };
+  if(window.db&&st.myId){
+    try{
+      await updateDoc(doc(db,'guests',st.myId),{contact:st.contact});
+      alert('저장됐어요! 😊');
+    }catch(e){alert('저장 실패: '+e.message);}
+  }
+}
+window.saveMainContact=saveMainContact;
+
 function showProfileTab(){
-  document.getElementById('profile-tab-content').style.display='flex';
   document.getElementById('contact-tab-content').style.display='none';
   document.getElementById('tab-profile-btn').style.color='#22c55e';
   document.getElementById('tab-profile-btn').style.borderBottomColor='#22c55e';
@@ -1385,7 +1461,14 @@ async function saveContact(){
   }
   alert('연락처가 저장됐어요! 매칭 시 상대방에게 공개돼요 😊');
 }
-window.saveContact=saveContact;
+async function goToWait(){
+  document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
+  goScreen('s-wait');
+  listenSession();
+  listenMyDoc();
+  listenGuestsForUser();
+}
+window.goToWait=goToWait;
 
 function openProfileModal(guestId){
   const u=st.guests[guestId];
