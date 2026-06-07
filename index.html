@@ -1103,21 +1103,21 @@ function renderPeople(){
   const assignment=st.currentRoomAssignment||{};
   const hasAssignment=Object.keys(assignment).length>0;
   const myRoom=st.myId?assignment[st.myId]:null;
+  const isFreetalking=st.currentStep>=6;
 
   let guests;
-  if(hasAssignment&&myRoom){
-    // 같은 룸, 나 제외
+  if(isFreetalking){
+    // 프리토킹: 전체 공개
+    guests=Object.values(st.guests).filter(g=>g.id!==st.myId);
+  } else if(hasAssignment&&myRoom){
+    // 룸 배정 후: 같은 룸만
     guests=Object.values(st.guests).filter(g=>
       g.id!==st.myId && assignment[g.id]===myRoom
     );
-  } else if(hasAssignment&&!myRoom){
-    // 배정됐지만 내 ID가 없으면 — 전체 반대 성별 보여줌
-    const opp=st.gender==='m'?'f':'m';
-    guests=Object.values(st.guests).filter(g=>g.gender===opp&&g.id!==st.myId);
   } else {
-    // 배정 전
-    const opp=st.gender==='m'?'f':'m';
-    guests=Object.values(st.guests).filter(g=>g.gender===opp);
+    // 룸 배정 전: 안 보임
+    list.innerHTML='<div style="text-align:center;padding:40px 0;font-size:13px;color:var(--muted);">룸 배정 후 같은 방 참가자를 볼 수 있어요 😊</div>';
+    return;
   }
 
   if(!guests.length){
