@@ -361,6 +361,13 @@ textarea{resize:none;line-height:1.5;}
     <div class="sec-lbl" style="margin-top:16px;">룸 관리</div>
     <div id="admin-home-rooms"></div>
 
+    <!-- 모임 종료 -->
+    <div style="margin-top:24px;padding:20px 0;border-top:1px solid var(--border);">
+      <button onclick="endEvent()" style="width:100%;padding:15px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:#1a1a1a;color:var(--white);font-family:inherit;">
+        🏁 모임 종료
+      </button>
+    </div>
+
     <div style="height:40px;"></div>
   </div>
 
@@ -855,6 +862,18 @@ function listenSession(){
       st.currentStep=d.step;
       if(d.step>=3) st.heartsEnabled=true;
       if(document.getElementById('s-wait').classList.contains('on')) goScreen('s-main');
+      // step이 1로 초기화되면 모임 종료
+      if(d.step===1&&st.myId){
+        clearInterval(st.heartbeatInt);
+        clearInterval(st.timerInt);
+        document.getElementById('app').innerHTML=`
+          <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:#0f0f0f;">
+            <div style="font-size:48px;margin-bottom:16px;">🏁</div>
+            <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;">모임이 종료되었습니다</div>
+            <div style="font-size:14px;color:#666;">오늘 함께해서 즐거웠어요 😊</div>
+          </div>`;
+        return;
+      }
       renderPeople();
     }
     // 룸 배정 정보 수신 - 항상 체크
@@ -1748,8 +1767,35 @@ async function stopTimer(){
 }
 window.stopTimer=stopTimer;
 
-function backToHome(){renderAdminHome();}
-window.backToHome=backToHome;
+async function endEvent(){
+  if(!confirm('모임을 종료하시겠어요?\n모든 게스트 데이터가 삭제됩니다.')) return;
+  try{
+    // 모든 게스트 데이터 삭제
+    const snap=await db.collection('guests').get();
+    for(const d of snap.docs){
+      await deleteDoc(doc(db,'guests',d.id));
+    }
+    // 세션 초기화
+    await setDoc(SESSION_REF(),{
+      code:'1212', step:1,
+      roomAssignment:{}, roomHistory:{}
+    });
+    // 관리자 state 초기화
+    st.currentStep=2;
+    st.heartsEnabled=false;
+    st.currentRoomAssignment={};
+    st.roomHistory={};
+    st.guests={};
+    clearInterval(st.stepTimerInt);
+    clearInterval(st.roomBannerTimer);
+    alert('모임이 종료되었습니다 👋');
+    renderAdminHomeScreen();
+  }catch(e){
+    console.error('모임 종료 실패:', e);
+    alert('오류가 발생했어요: '+e.message);
+  }
+}
+window.endEvent=endEvent;
 
 function backTopicToPick(){
   document.getElementById('ap-topic-area').style.display='none';
