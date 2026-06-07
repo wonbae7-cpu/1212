@@ -363,6 +363,9 @@ textarea{resize:none;line-height:1.5;}
 
     <!-- 모임 종료 -->
     <div style="margin-top:24px;padding:20px 0;border-top:1px solid var(--border);">
+      <button onclick="clearAllGuests()" style="width:100%;padding:12px;border-radius:var(--r2);font-size:14px;font-weight:600;cursor:pointer;border:none;background:var(--bg);color:var(--muted);border:1px solid var(--border);font-family:inherit;margin-bottom:8px;">
+        🗑️ 게스트 데이터 초기화
+      </button>
       <button onclick="endEvent()" style="width:100%;padding:15px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:#1a1a1a;color:var(--white);font-family:inherit;">
         🏁 모임 종료
       </button>
@@ -1847,6 +1850,18 @@ async function stopTimer(){
 }
 window.stopTimer=stopTimer;
 
+async function clearAllGuests(){
+  if(!confirm('모든 게스트 데이터를 삭제하시겠어요?')) return;
+  try{
+    const snap=await db.collection('guests').get();
+    for(const d of snap.docs) await deleteDoc(doc(db,'guests',d.id));
+    st.guests={};
+    alert('게스트 데이터가 초기화되었어요!');
+    renderAdminHomeScreen();
+  }catch(e){alert('실패: '+e.message);}
+}
+window.clearAllGuests=clearAllGuests;
+
 async function endEvent(){
   if(!confirm('모임을 종료하시겠어요?\n모든 게스트 데이터가 삭제됩니다.')) return;
   try{
@@ -1876,6 +1891,14 @@ async function endEvent(){
 window.endEvent=endEvent;
 
 async function startNewEvent(){
+  try{
+    // 기존 게스트 전부 삭제
+    const snap=await db.collection('guests').get();
+    for(const d of snap.docs){
+      await deleteDoc(doc(db,'guests',d.id));
+    }
+  }catch(e){console.log('게스트 삭제 실패',e);}
+
   await setDoc(SESSION_REF(),{
     code:'1212', step:2,
     roomAssignment:{}, roomHistory:{}
@@ -1887,7 +1910,6 @@ async function startNewEvent(){
   st.guests={};
   clearInterval(st.stepTimerInt);
   clearInterval(st.roomBannerTimer);
-  // 종료 패널 숨기고 홈 화면 다시 렌더링
   document.getElementById('admin-end-panel').style.display='none';
   renderAdminHomeScreen();
 }
