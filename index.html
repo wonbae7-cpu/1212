@@ -1014,7 +1014,7 @@ function listenGuests(){
     });
     updateAdminStats();
     renderGuestListAdmin();
-    renderPeople();
+    renderPeople(); // 항상 호출
     // 관리자 홈 화면도 업데이트
     if(st.isAdmin){
       updateAdminHomeStats();
@@ -1047,18 +1047,23 @@ window.switchTab=switchTab;
 // ── PEOPLE ───────────────────────────────────────
 function renderPeople(){
   const list=document.getElementById('people-list');
+  if(!list) return;
   const assignment=st.currentRoomAssignment||{};
   const hasAssignment=Object.keys(assignment).length>0;
+  const myRoom=st.myId?assignment[st.myId]:null;
 
   let guests;
-  if(hasAssignment&&st.myId&&assignment[st.myId]){
-    const myRoom=assignment[st.myId];
-    // 같은 룸에 배정된 나를 제외한 전체
+  if(hasAssignment&&myRoom){
+    // 같은 룸, 나 제외
     guests=Object.values(st.guests).filter(g=>
       g.id!==st.myId && assignment[g.id]===myRoom
     );
+  } else if(hasAssignment&&!myRoom){
+    // 배정됐지만 내 ID가 없으면 — 전체 반대 성별 보여줌
+    const opp=st.gender==='m'?'f':'m';
+    guests=Object.values(st.guests).filter(g=>g.gender===opp&&g.id!==st.myId);
   } else {
-    // 배정 전엔 반대 성별 전체
+    // 배정 전
     const opp=st.gender==='m'?'f':'m';
     guests=Object.values(st.guests).filter(g=>g.gender===opp);
   }
