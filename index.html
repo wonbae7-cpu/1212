@@ -372,6 +372,7 @@ textarea{resize:none;line-height:1.5;}
     </div>
   </div>
   <div class="tab-body" id="tab-me" style="background:#0f0f0f;">
+    <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
     <div id="my-prof-view"></div>
   </div>
   <button id="admin-fab" onclick="openAdmin()" style="background:#22c55e;color:#000;">⚙</button>
@@ -1367,11 +1368,10 @@ function renderMyProfile(){
       }
       <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:11px;">📷</div>
     </div>
-    <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
     <div>
       <div style="font-size:17px;font-weight:700;color:#fff;">${st.nick||'나'}</div>
       <div style="font-size:12px;color:#555;">${st.gender==='f'?'여성 👩':'남성 👨'}</div>
-      <div style="font-size:10px;color:#333;margin-top:2px;">📷 눌러서 사진 변경</div>
+      <div style="font-size:10px;color:#333;margin-top:2px;">사진을 눌러서 변경</div>
     </div>
   </div>`;
   Object.entries(st.answers).forEach(([sec,qas])=>{
