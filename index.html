@@ -899,15 +899,17 @@ function listenSession(){
     }
     // 룸 배정 정보 수신 - 항상 체크
     if(d.roomAssignment&&st.myId){
+      const prevRoom=st.currentRoomAssignment?.[st.myId];
       st.currentRoomAssignment=d.roomAssignment;
       const myRoom=d.roomAssignment[st.myId];
+      // 룸이 바뀌었거나 처음 받았을 때 참가자 목록 갱신
+      if(myRoom&&(myRoom!==prevRoom||isFirst)) renderPeople();
       if(myRoom){
         const tl=TIMELINE.find(t=>t.stepIdx===d.step);
         const duration=tl?.duration||20*60;
         const startedAt=d.stepStartedAt?.toMillis?.()||Date.now();
         const elapsed=Math.floor((Date.now()-startedAt)/1000);
         const remaining=Math.max(0, duration-elapsed);
-        // 배너가 없거나 룸이 바뀌었을 때만 갱신
         const existingBanner=document.getElementById('room-assign-banner');
         const existingRoom=existingBanner?.querySelector('[data-room]')?.dataset?.room;
         if(!existingBanner||existingRoom!==myRoom||remaining>0){
