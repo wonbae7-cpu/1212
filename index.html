@@ -864,27 +864,38 @@ async function submitProfile(){
 window.submitProfile=submitProfile;
 
 // ── REALTIME LISTENERS ───────────────────────────
+let sessionListenerFirst=true;
 function listenSession(){
+  sessionListenerFirst=true;
   onSnapshot(SESSION_REF(),(snap)=>{
     if(!snap.exists)return;
     const d=snap.data();
-    if(d.step!==undefined&&d.step!==st.currentStep){
-      st.currentStep=d.step;
-      if(d.step>=3) st.heartsEnabled=true;
-      if(document.getElementById('s-wait').classList.contains('on')) goScreen('s-main');
-      // step이 1로 초기화되면 모임 종료
-      if(d.step===1&&st.myId){
-        clearInterval(st.heartbeatInt);
-        clearInterval(st.timerInt);
-        document.getElementById('app').innerHTML=`
-          <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:#0f0f0f;">
-            <div style="font-size:48px;margin-bottom:16px;">🏁</div>
-            <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;">모임이 종료되었습니다</div>
-            <div style="font-size:14px;color:#666;">오늘 함께해서 즐거웠어요 😊</div>
-          </div>`;
-        return;
+    const isFirst=sessionListenerFirst;
+    sessionListenerFirst=false;
+
+    if(d.step!==undefined){
+      const stepChanged=d.step!==st.currentStep;
+      if(stepChanged||isFirst){
+        st.currentStep=d.step;
+        if(d.step>=3) st.heartsEnabled=true;
+        // 대기화면에 있고 step이 2 이상이면 메인으로
+        if(document.getElementById('s-wait').classList.contains('on')&&d.step>=2){
+          goScreen('s-main');
+        }
+        // step이 1로 초기화되면 모임 종료
+        if(d.step===1&&st.myId){
+          clearInterval(st.heartbeatInt);
+          clearInterval(st.timerInt);
+          document.getElementById('app').innerHTML=`
+            <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:#0f0f0f;">
+              <div style="font-size:48px;margin-bottom:16px;">🏁</div>
+              <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;">모임이 종료되었습니다</div>
+              <div style="font-size:14px;color:#666;">오늘 함께해서 즐거웠어요 😊</div>
+            </div>`;
+          return;
+        }
+        if(stepChanged) renderPeople();
       }
-      renderPeople();
     }
     // 룸 배정 정보 수신 - 항상 체크
     if(d.roomAssignment&&st.myId){
