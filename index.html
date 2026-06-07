@@ -1594,46 +1594,57 @@ function assignRooms(round){
   const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
   const assignment={};
   const prevAssignments=st.roomHistory||{};
+  const MAX_PER_GENDER=3; // 룸당 최대 남3 + 여3 = 6명
 
-  // 페어링: 남/여를 쌍으로 묶어서 같은 룸에 배정
-  const pairs=[];
-  const minLen=Math.min(males.length,females.length);
-  for(let i=0;i<minLen;i++) pairs.push([males[i],females[i]]);
-  // 남은 사람들 (짝 없는 경우)
-  const unpaired=[...males.slice(minLen),...females.slice(minLen)];
+  // 룸별 남/여 카운트
+  const roomCount={};
+  roomNames.forEach(r=>roomCount[r]={m:0,f:0});
 
-  // 각 페어에게 룸 배정 (이전에 안 간 룸 우선, 안 만난 사람 우선)
-  const roomUsage={};
-  roomNames.forEach(r=>roomUsage[r]=[]);
-
-  function getBestRoomForPair(m,f){
-    const visitedM=prevAssignments[m?.id]||[];
-    const visitedF=prevAssignments[f?.id]||[];
-    // 둘 다 안 간 룸 우선
-    let candidates=roomNames.filter(r=>!visitedM.includes(r)&&(!f||!visitedF.includes(r)));
-    if(!candidates.length) candidates=roomNames.filter(r=>!visitedM.includes(r));
+  function getBestRoom(guestId, gender, visited){
+    // 안 간 룸 중 정원 안 찬 룸 우선
+    let candidates=roomNames.filter(r=>
+      !visited.includes(r) && roomCount[r][gender]<MAX_PER_GENDER
+    );
+    // 없으면 정원 안 찬 룸
+    if(!candidates.length) candidates=roomNames.filter(r=>roomCount[r][gender]<MAX_PER_GENDER);
+    // 그것도 없으면 전체
     if(!candidates.length) candidates=[...roomNames];
     // 인원 적은 룸 우선
-    candidates.sort((a,b)=>roomUsage[a].length-roomUsage[b].length);
+    candidates.sort((a,b)=>(roomCount[a].m+roomCount[a].f)-(roomCount[b].m+roomCount[b].f));
     return candidates[0];
   }
 
-  pairs.forEach(([m,f])=>{
-    const room=getBestRoomForPair(m,f);
+  // 남/여 쌍으로 묶어서 같은 룸에 배정
+  const minLen=Math.min(males.length,females.length);
+  for(let i=0;i<minLen;i++){
+    const m=males[i], f=females[i];
+    const visitedM=prevAssignments[m.id]||[];
+    const visitedF=prevAssignments[f.id]||[];
+    // 둘 다 수용 가능한 룸 찾기
+    let room=null;
+    const candidates=roomNames.filter(r=>
+      !visitedM.includes(r)&&!visitedF.includes(r)&&
+      roomCount[r].m<MAX_PER_GENDER&&roomCount[r].f<MAX_PER_GENDER
+    );
+    if(candidates.length){
+      candidates.sort((a,b)=>(roomCount[a].m+roomCount[a].f)-(roomCount[b].m+roomCount[b].f));
+      room=candidates[0];
+    } else {
+      room=getBestRoom(m.id,'m',visitedM);
+    }
     assignment[m.id]=room;
     assignment[f.id]=room;
-    roomUsage[room].push(m.id,f.id);
-  });
+    roomCount[room].m++;
+    roomCount[room].f++;
+  }
 
-  // 짝 없는 사람들은 인원 적은 룸에 배정
+  // 짝 없는 사람 배정
+  const unpaired=[...males.slice(minLen),...females.slice(minLen)];
   unpaired.forEach(g=>{
     const visited=prevAssignments[g.id]||[];
-    let candidates=roomNames.filter(r=>!visited.includes(r));
-    if(!candidates.length) candidates=[...roomNames];
-    candidates.sort((a,b)=>roomUsage[a].length-roomUsage[b].length);
-    const room=candidates[0];
+    const room=getBestRoom(g.id,g.gender,visited);
     assignment[g.id]=room;
-    roomUsage[room].push(g.id);
+    roomCount[room][g.gender]++;
   });
 
   // 히스토리 업데이트
