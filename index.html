@@ -326,7 +326,7 @@ textarea{resize:none;line-height:1.5;}
     <div style="font-size:20px;font-weight:900;color:var(--white);letter-spacing:-1px;">12:12 <span style="color:var(--pink);font-size:13px;font-weight:500;">관리자</span></div>
     <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#555;"><span class="sync-dot live"></span>실시간 연동</div>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:20px;">
+  <div class="admin-scroll" style="flex:1;overflow-y:auto;padding:20px;">
 
     <!-- 고유 코드 -->
     <div class="sec-lbl">현재 고유 코드</div>
@@ -1770,17 +1770,14 @@ window.stopTimer=stopTimer;
 async function endEvent(){
   if(!confirm('모임을 종료하시겠어요?\n모든 게스트 데이터가 삭제됩니다.')) return;
   try{
-    // 모든 게스트 데이터 삭제
     const snap=await db.collection('guests').get();
     for(const d of snap.docs){
       await deleteDoc(doc(db,'guests',d.id));
     }
-    // 세션 초기화
     await setDoc(SESSION_REF(),{
       code:'1212', step:1,
       roomAssignment:{}, roomHistory:{}
     });
-    // 관리자 state 초기화
     st.currentStep=2;
     st.heartsEnabled=false;
     st.currentRoomAssignment={};
@@ -1788,14 +1785,40 @@ async function endEvent(){
     st.guests={};
     clearInterval(st.stepTimerInt);
     clearInterval(st.roomBannerTimer);
-    alert('모임이 종료되었습니다 👋');
-    renderAdminHomeScreen();
+
+    // 모임 종료 화면 표시
+    document.getElementById('s-admin').querySelector('.admin-scroll').innerHTML=`
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:32px;">
+        <div style="font-size:56px;margin-bottom:20px;">🏁</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:8px;">모임이 종료되었어요</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:40px;">수고하셨습니다 😊</div>
+        <button onclick="startNewEvent()" style="width:100%;max-width:280px;padding:16px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:var(--pink);color:#fff;font-family:inherit;">
+          ✨ 새 모임 시작하기
+        </button>
+      </div>`;
   }catch(e){
     console.error('모임 종료 실패:', e);
     alert('오류가 발생했어요: '+e.message);
   }
 }
 window.endEvent=endEvent;
+
+async function startNewEvent(){
+  // 새 코드 자동 생성 (4자리 랜덤)
+  const newCode=String(Math.floor(1000+Math.random()*9000));
+  await setDoc(SESSION_REF(),{
+    code:newCode, step:2,
+    roomAssignment:{}, roomHistory:{}
+  });
+  st.currentStep=2;
+  st.heartsEnabled=false;
+  st.currentRoomAssignment={};
+  st.roomHistory={};
+  st.guests={};
+  alert(`새 모임이 시작됐어요!\n새 입장 코드: ${newCode}`);
+  renderAdminHomeScreen();
+}
+window.startNewEvent=startNewEvent;
 
 function backTopicToPick(){
   document.getElementById('ap-topic-area').style.display='none';
