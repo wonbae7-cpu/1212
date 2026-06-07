@@ -777,12 +777,12 @@ async function submitCode(){
     if(c===code){
       goScreen('s-gender');
     } else {
-      alert('코드가 올바르지 않아요.\n입력: '+c+'\n정답: '+code);
+      alert('코드가 올바르지 않아요. 다시 확인해주세요.');
     }
   }catch(e){
     console.error('submitCode error:',e);
     if(c==='1212') goScreen('s-gender');
-    else alert('코드 확인 실패.\n기본코드는 1212입니다.\n입력된 코드: '+c);
+    else alert('코드가 올바르지 않아요. 다시 확인해주세요.');
   }
 }
 window.submitCode=submitCode;
