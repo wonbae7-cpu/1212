@@ -699,7 +699,8 @@ let st={
   hearts:{},timerInt:null,timerLeft:0,
   adminRoom:null,adminPicked:[],adminDur:5,adminTopic:null,
   currentStep:2,heartsEnabled:false,guests:{},matches:{},
-  stepTimerInt:null,stepTimerLeft:0
+  stepTimerInt:null,stepTimerLeft:0,
+  roomBannerTimer:null,roomBannerLeft:0
 };
 const ADMIN_PW='1212admin';
 const SESSION_REF=()=>doc(db,'session','current');
@@ -822,7 +823,13 @@ function listenSession(){
     if(d.roomAssignment){
       st.currentRoomAssignment=d.roomAssignment;
       if(st.myId&&d.roomAssignment[st.myId]){
-        showRoomAssignment(d.roomAssignment[st.myId]);
+        // 남은 시간 계산
+        const tl=TIMELINE.find(t=>t.stepIdx===d.step);
+        const duration=tl?.duration||20*60;
+        const startedAt=d.stepStartedAt?.toMillis?.()||Date.now();
+        const elapsed=Math.floor((Date.now()-startedAt)/1000);
+        const remaining=Math.max(0, duration-elapsed);
+        showRoomAssignment(d.roomAssignment[st.myId], remaining);
       }
     }
     if(d.code){document.getElementById('ap-code-display').textContent=d.code;}
@@ -834,18 +841,44 @@ function listenSession(){
   });
 }
 
-function showRoomAssignment(roomName){
+function showRoomAssignment(roomName, duration){
   const existing=document.getElementById('room-assign-banner');
   if(existing) existing.remove();
+  clearInterval(st.roomBannerTimer);
+
   const banner=document.createElement('div');
   banner.id='room-assign-banner';
   banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:500;max-width:430px;margin:0 auto;';
   banner.innerHTML=`
-    <div style="background:var(--pink);color:#fff;padding:20px 24px;text-align:center;animation:slideDown .3s ease;">
-      <div style="font-size:12px;font-weight:500;opacity:.8;margin-bottom:6px;">📍 지금 이동할 룸</div>
-      <div style="font-size:24px;font-weight:700;">${roomName}</div>
+    <div style="background:var(--pink);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;animation:slideDown .3s ease;">
+      <div>
+        <div style="font-size:11px;font-weight:500;opacity:.8;margin-bottom:3px;">📍 지금 이동할 룸</div>
+        <div style="font-size:22px;font-weight:700;">${roomName}</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:10px;opacity:.8;margin-bottom:2px;">남은 시간</div>
+        <div id="room-banner-timer" style="font-size:24px;font-weight:900;letter-spacing:-1px;">--:--</div>
+      </div>
     </div>`;
   document.body.appendChild(banner);
+
+  // 타이머 시작
+  if(duration>0){
+    st.roomBannerLeft=duration;
+    const updateTimer=()=>{
+      const el=document.getElementById('room-banner-timer');
+      if(!el){clearInterval(st.roomBannerTimer);return;}
+      el.textContent=fmtTime(st.roomBannerLeft);
+      if(st.roomBannerLeft<=0){
+        clearInterval(st.roomBannerTimer);
+        el.textContent='00:00';
+        el.style.color='rgba(255,255,255,0.5)';
+      }
+      st.roomBannerLeft--;
+    };
+    updateTimer();
+    st.roomBannerTimer=setInterval(updateTimer,1000);
+  }
 }
 
 function listenMyDoc(){
@@ -868,6 +901,11 @@ function listenMyDoc(){
     if(d.topicAlert&&!d.topicSeen){
       showOverlay(d.topicAlert,d.topicDur||5);
       updateDoc(doc(db,'guests',st.myId),{topicSeen:true});
+    }
+    // 관리자가 타이머 종료 시 오버레이 닫기
+    if(d.topicEnded){
+      closeOverlay();
+      updateDoc(doc(db,'guests',st.myId),{topicEnded:false});
     }
   });
 }
@@ -1592,8 +1630,18 @@ async function sendMatch(){
 }
 window.sendMatch=sendMatch;
 
-function stopTimer(){
+async function stopTimer(){
   clearInterval(st.timerInt);
+  // 지목된 게스트들에게 종료 신호 전송
+  for(const p of st.adminPicked){
+    try{
+      await updateDoc(doc(db,'guests',p.id),{
+        topicAlert:null,
+        topicSeen:true,
+        topicEnded:true
+      });
+    }catch(e){console.log('stop timer error',e);}
+  }
   document.getElementById('admin-running-panel').style.display='none';
   renderAdminHomeScreen();
 }
