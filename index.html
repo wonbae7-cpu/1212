@@ -74,7 +74,11 @@ textarea{resize:none;line-height:1.5;}
 .nav-tab.on{color:var(--pink);border-bottom-color:var(--pink);}
 .tab-body{display:none;padding:18px 20px 80px;overflow-y:auto;}
 .tab-body.on{display:block;}
-.pc{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:14px;margin-bottom:10px;}
+.pc{background:#1a1a1a;border-radius:var(--r);border:1px solid #2a2a2a;padding:14px;margin-bottom:10px;}
+.pc-name{font-size:15px;font-weight:600;color:#fff;}
+.pc-meta{font-size:12px;color:#555;margin-top:2px;}
+.pc-qa{font-size:12px;color:#555;line-height:1.6;}
+.pc-qa b{color:#aaa;}
 .pc-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
 .av-m{background:var(--blue3);color:var(--blue4);}
@@ -327,43 +331,50 @@ textarea{resize:none;line-height:1.5;}
 </div>
 
 <!-- MAIN APP -->
-<div class="screen" id="s-main">
-  <div class="top-bar">
-    <div class="tb-head">
-      <button onclick="openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);font-family:inherit;z-index:1;">
+<div class="screen" id="s-main" style="background:#0f0f0f;">
+  <div class="top-bar" style="background:#0f0f0f;border-bottom:1px solid #1e1e1e;padding:14px 20px 0;">
+    <div class="tb-head" style="margin-bottom:12px;">
+      <button onclick="openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:#555;font-family:'Pretendard',sans-serif;z-index:1;">
         <span style="font-size:16px;">←</span> 뒤로
       </button>
-      <div class="tb-logo">12:12</div>
-      <div id="my-status" class="status-pill sp-free"><div class="sdot" style="background:var(--teal);"></div>자유 대화 중</div>
+      <!-- WR1 로고 -->
+      <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;">
+        <span style="font-size:20px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1;">WR</span>
+        <span style="font-size:20px;font-weight:900;color:#22c55e;letter-spacing:-1px;line-height:1;">1</span>
+      </div>
+      <div id="my-status" class="status-pill" style="background:#1a1a1a;border:1px solid #2a2a2a;">
+        <div class="sdot" style="background:#22c55e;"></div>
+        <span style="color:#22c55e;font-size:11px;font-weight:600;">자유 대화 중</span>
+      </div>
     </div>
-    <div class="nav-tabs">
-      <button class="nav-tab on" onclick="switchTab('people')">참가자</button>
-      <button class="nav-tab" onclick="switchTab('starter')">대화카드</button>
-      <button class="nav-tab" onclick="switchTab('me')">내 프로필</button>
+    <div class="nav-tabs" style="border-bottom:none;">
+      <button class="nav-tab on" onclick="switchTab('people')" style="color:#22c55e;border-bottom-color:#22c55e;">참가자</button>
+      <button class="nav-tab" onclick="switchTab('starter')" style="color:#555;">대화카드</button>
+      <button class="nav-tab" onclick="switchTab('me')" style="color:#555;">내 프로필</button>
     </div>
   </div>
-  <div class="tab-body on" id="tab-people">
-    <div class="match-banner" id="match-banner">
-      <div class="mb-title">💘 매칭!</div>
-      <div class="mb-sub" id="mb-sub"></div>
+  <div class="tab-body on" id="tab-people" style="background:#0f0f0f;">
+    <div class="match-banner" id="match-banner" style="background:#0a2a14;border:1px solid #1a4a2a;">
+      <div class="mb-title" style="color:#22c55e;">💘 매칭!</div>
+      <div class="mb-sub" id="mb-sub" style="color:#555;"></div>
     </div>
     <div id="people-list"></div>
   </div>
-  <div class="tab-body" id="tab-starter">
-    <div style="font-size:20px;font-weight:700;margin-bottom:6px;">대화 스타터 카드</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:18px;">"이 카드 꺼내도 돼요?" 자체가 시작이에요 😄</div>
-    <button class="draw-btn" onclick="drawCard()">🎴  카드 뽑기</button>
-    <div class="card-result" id="card-result">
+  <div class="tab-body" id="tab-starter" style="background:#0f0f0f;">
+    <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:6px;">대화 스타터 카드</div>
+    <div style="font-size:13px;color:#555;margin-bottom:18px;">"이 카드 꺼내도 돼요?" 자체가 시작이에요 😄</div>
+    <button class="draw-btn" onclick="drawCard()" style="border-color:#2a2a2a;color:#555;background:#1a1a1a;">🎴  카드 뽑기</button>
+    <div class="card-result" id="card-result" style="background:#1a1a1a;border:1px solid #2a2a2a;">
       <div class="cr-emoji" id="cr-emoji"></div>
-      <div class="cr-cat" id="cr-cat"></div>
-      <div class="cr-text" id="cr-text"></div>
-      <button class="btn btn-gray" style="margin-top:14px;" onclick="drawCard()">다른 카드</button>
+      <div class="cr-cat" id="cr-cat" style="color:#555;"></div>
+      <div class="cr-text" id="cr-text" style="color:#fff;"></div>
+      <button class="btn" style="margin-top:14px;background:#1a1a1a;color:#555;border:1px solid #2a2a2a;border-radius:var(--r2);" onclick="drawCard()">다른 카드</button>
     </div>
   </div>
-  <div class="tab-body" id="tab-me">
+  <div class="tab-body" id="tab-me" style="background:#0f0f0f;">
     <div id="my-prof-view"></div>
   </div>
-  <button id="admin-fab" onclick="openAdmin()">⚙</button>
+  <button id="admin-fab" onclick="openAdmin()" style="background:#22c55e;color:#000;">⚙</button>
 </div>
 
 <!-- ADMIN HOME SCREEN -->
@@ -1217,11 +1228,20 @@ window.kickGuest=kickGuest;
 
 // ── TABS ─────────────────────────────────────────
 function switchTab(id){
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.nav-tab').forEach(t=>{
+    t.classList.remove('on');
+    t.style.color='#555';
+    t.style.borderBottomColor='transparent';
+  });
   document.querySelectorAll('.tab-body').forEach(t=>t.classList.remove('on'));
   document.getElementById('tab-'+id).classList.add('on');
   const map={people:0,starter:1,me:2};
-  document.querySelectorAll('.nav-tab')[map[id]]?.classList.add('on');
+  const activeTab=document.querySelectorAll('.nav-tab')[map[id]];
+  if(activeTab){
+    activeTab.classList.add('on');
+    activeTab.style.color='#22c55e';
+    activeTab.style.borderBottomColor='#22c55e';
+  }
 }
 window.switchTab=switchTab;
 
@@ -1375,8 +1395,8 @@ function updateRing(){
 
 function closeOverlay(){
   document.getElementById('overlay').classList.remove('show');
-  document.getElementById('my-status').className='status-pill sp-free';
-  document.getElementById('my-status').innerHTML='<div class="sdot" style="background:var(--teal);"></div>자유 대화 중';
+  const status=document.getElementById('my-status');
+  status.innerHTML='<div class="sdot" style="background:#22c55e;"></div><span style="color:#22c55e;font-size:11px;font-weight:600;">자유 대화 중</span>';
 }
 window.closeOverlay=closeOverlay;
 
