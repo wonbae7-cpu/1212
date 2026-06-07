@@ -1804,10 +1804,8 @@ async function endEvent(){
 window.endEvent=endEvent;
 
 async function startNewEvent(){
-  // 새 코드 자동 생성 (4자리 랜덤)
-  const newCode=String(Math.floor(1000+Math.random()*9000));
   await setDoc(SESSION_REF(),{
-    code:newCode, step:2,
+    code:'1212', step:2,
     roomAssignment:{}, roomHistory:{}
   });
   st.currentStep=2;
@@ -1815,7 +1813,7 @@ async function startNewEvent(){
   st.currentRoomAssignment={};
   st.roomHistory={};
   st.guests={};
-  alert(`새 모임이 시작됐어요!\n새 입장 코드: ${newCode}`);
+  alert('새 모임이 시작됐어요!\n입장 코드: 1212');
   renderAdminHomeScreen();
 }
 window.startNewEvent=startNewEvent;
