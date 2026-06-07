@@ -451,6 +451,23 @@ textarea{resize:none;line-height:1.5;}
   </div>
 </div>
 
+<!-- HEART CONFIRM MODAL -->
+<div id="heart-modal" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:320px;text-align:center;animation:fadeUp .2s ease;">
+    <div style="font-size:32px;margin-bottom:12px;">💗</div>
+    <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">하트를 사용하시겠습니까?</div>
+    <div style="font-size:12px;color:#E24B4A;background:#FFF0F0;border-radius:8px;padding:10px 12px;margin-bottom:20px;line-height:1.6;text-align:left;">
+      ⚠️ 주의사항<br>
+      · 룸 1개당 하트 1개입니다<br>
+      · 한번 사용하면 돌이킬 수 없습니다
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button onclick="cancelHeart()" style="padding:13px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:inherit;">아니오</button>
+      <button onclick="confirmHeart()" style="padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:var(--pink);color:#fff;font-family:inherit;">예</button>
+    </div>
+  </div>
+</div>
+
 <!-- BACK CONFIRM MODAL -->
 <div id="back-modal">
   <div class="back-box">
@@ -1187,18 +1204,45 @@ function renderPeople(){
     </div>`).join('');
 }
 
-async function toggleHeart(targetId,targetNick,btn){
-  if(!st.heartsEnabled)return;
-  st.hearts[targetId]=!st.hearts[targetId];
-  btn.classList.toggle('on',st.hearts[targetId]);
-  btn.innerHTML=st.hearts[targetId]?'❤️':'🤍';
-  if(!st.myId)return;
+// ── HEART MODAL ──────────────────────────────────
+let pendingHeartId=null, pendingHeartNick=null, pendingHeartBtn=null;
+
+function toggleHeart(targetId,targetNick,btn){
+  if(!st.heartsEnabled) return;
+  // 이미 하트 보낸 경우 취소 불가
+  if(st.hearts[targetId]){
+    alert('이미 하트를 보냈어요. 돌이킬 수 없어요 💗');
+    return;
+  }
+  // 확인 모달
+  pendingHeartId=targetId;
+  pendingHeartNick=targetNick;
+  pendingHeartBtn=btn;
+  document.getElementById('heart-modal').style.display='flex';
+}
+window.toggleHeart=toggleHeart;
+
+function cancelHeart(){
+  document.getElementById('heart-modal').style.display='none';
+  pendingHeartId=null;pendingHeartNick=null;pendingHeartBtn=null;
+}
+window.cancelHeart=cancelHeart;
+
+async function confirmHeart(){
+  document.getElementById('heart-modal').style.display='none';
+  if(!pendingHeartId) return;
+  const targetId=pendingHeartId, targetNick=pendingHeartNick, btn=pendingHeartBtn;
+  pendingHeartId=null;pendingHeartNick=null;pendingHeartBtn=null;
+
+  st.hearts[targetId]=true;
+  if(btn){btn.classList.add('on');btn.innerHTML='❤️';}
+  if(!st.myId) return;
   try{
     const myRef=doc(db,'guests',st.myId);
-    const hearts={...((await getDoc(myRef)).data()?.hearts||{}),[targetId]:st.hearts[targetId]};
+    const hearts={...((await getDoc(myRef)).data()?.hearts||{}),[targetId]:true};
     await updateDoc(myRef,{hearts});
     const targetSnap=await getDoc(doc(db,'guests',targetId));
-    if(targetSnap.exists&&targetSnap.data().hearts?.[st.myId]&&st.hearts[targetId]){
+    if(targetSnap.exists&&targetSnap.data().hearts?.[st.myId]){
       const b=document.getElementById('match-banner');
       document.getElementById('mb-sub').textContent=targetNick+'님과 매칭됐어요! 프리토킹 때 알림이 가요 😊';
       b.classList.add('show');
@@ -1207,7 +1251,7 @@ async function toggleHeart(targetId,targetNick,btn){
     }
   }catch(e){console.log(e);}
 }
-window.toggleHeart=toggleHeart;
+window.confirmHeart=confirmHeart;
 
 // ── STARTER CARD ─────────────────────────────────
 function drawCard(){
