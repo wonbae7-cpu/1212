@@ -350,6 +350,7 @@ textarea{resize:none;line-height:1.5;}
     <div class="nav-tabs" style="border-bottom:none;">
       <button class="nav-tab on" onclick="switchTab('people')" style="color:#22c55e;border-bottom-color:#22c55e;">참가자</button>
       <button class="nav-tab" onclick="switchTab('starter')" style="color:#555;">대화카드</button>
+      <button class="nav-tab" onclick="switchTab('timeline')" style="color:#555;">타임라인</button>
       <button class="nav-tab" onclick="switchTab('me')" style="color:#555;">내 프로필</button>
     </div>
   </div>
@@ -370,6 +371,9 @@ textarea{resize:none;line-height:1.5;}
       <div class="cr-text" id="cr-text" style="color:#fff;"></div>
       <button class="btn" style="margin-top:14px;background:#1a1a1a;color:#555;border:1px solid #2a2a2a;border-radius:var(--r2);" onclick="drawCard()">다른 카드</button>
     </div>
+  </div>
+  <div class="tab-body" id="tab-timeline" style="background:#0f0f0f;">
+    <div id="guest-timeline"></div>
   </div>
   <div class="tab-body" id="tab-me" style="background:#0f0f0f;">
     <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
@@ -1247,13 +1251,14 @@ function switchTab(id){
   });
   document.querySelectorAll('.tab-body').forEach(t=>t.classList.remove('on'));
   document.getElementById('tab-'+id).classList.add('on');
-  const map={people:0,starter:1,me:2};
+  const map={people:0,starter:1,timeline:2,me:3};
   const activeTab=document.querySelectorAll('.nav-tab')[map[id]];
   if(activeTab){
     activeTab.classList.add('on');
     activeTab.style.color='#22c55e';
     activeTab.style.borderBottomColor='#22c55e';
   }
+  if(id==='timeline') renderGuestTimeline();
 }
 window.switchTab=switchTab;
 
@@ -1303,8 +1308,31 @@ function renderPeople(){
     </div>`).join('');
 }
 
+function renderGuestTimeline(){
+  const el=document.getElementById('guest-timeline');
+  if(!el) return;
+  el.innerHTML=TIMELINE.map((t,i)=>{
+    const isDone=t.stepIdx<st.currentStep;
+    const isNow=t.stepIdx===st.currentStep;
+    return `<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #1a1a1a;">
+      <div style="display:flex;flex-direction:column;align-items:center;padding-top:3px;">
+        <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${isDone?'#22c55e':isNow?'#22c55e':'#2a2a2a'};${isNow?'box-shadow:0 0 0 3px #0a2a14;':''}"></div>
+        ${i<TIMELINE.length-1?`<div style="width:1px;flex:1;background:#1e1e1e;margin:4px 0;min-height:20px;"></div>`:''}
+      </div>
+      <div style="flex:1;padding-bottom:4px;">
+        <div style="font-size:10px;color:#444;font-weight:500;letter-spacing:.3px;">${t.time}</div>
+        <div style="font-size:13px;font-weight:600;color:${isNow?'#22c55e':isDone?'#555':'#aaa'};margin:2px 0;">
+          ${t.step}${isNow?'<span style="display:inline-block;font-size:9px;font-weight:700;background:#22c55e;color:#000;padding:2px 6px;border-radius:99px;margin-left:6px;">진행중</span>':''}
+        </div>
+        <div style="font-size:11px;color:#444;">${t.desc}</div>
+        ${isNow&&st.stepTimerLeft>0?`<div style="font-size:13px;font-weight:700;color:#22c55e;margin-top:4px;">⏱ ${fmtTime(st.stepTimerLeft)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+window.renderGuestTimeline=renderGuestTimeline;
+
 function openProfileModal(guestId){
-  const u=st.guests[guestId];
   if(!u) return;
   const el=document.getElementById('profile-modal-content');
   let h=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
