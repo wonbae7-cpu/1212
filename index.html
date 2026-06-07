@@ -1096,11 +1096,9 @@ async function submitProfile(){
     listenSession();
     listenGuestsForUser();
   } else {
-    document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
-    goScreen('s-wait');
-    listenSession();
-    listenMyDoc();
-    listenGuestsForUser();
+    // 프로필 화면 띄우고 연락처 탭으로 이동
+    goScreen('s-profile');
+    setTimeout(()=>showContactTab(),100);
   }
 }
 window.submitProfile=submitProfile;
