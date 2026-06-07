@@ -1208,17 +1208,23 @@ function renderPeople(){
 let pendingHeartId=null, pendingHeartNick=null, pendingHeartBtn=null;
 
 function toggleHeart(targetId,targetNick,btn){
-  if(!st.heartsEnabled) return;
-  // 이미 하트 보낸 경우 취소 불가
+  console.log('toggleHeart 호출됨:', targetId, targetNick);
+  if(!st.heartsEnabled){
+    console.log('하트 비활성화 상태');
+    return;
+  }
   if(st.hearts[targetId]){
     alert('이미 하트를 보냈어요. 돌이킬 수 없어요 💗');
     return;
   }
-  // 확인 모달
   pendingHeartId=targetId;
   pendingHeartNick=targetNick;
   pendingHeartBtn=btn;
-  document.getElementById('heart-modal').style.display='flex';
+  console.log('모달 열기 시도');
+  const modal=document.getElementById('heart-modal');
+  console.log('모달 엘리먼트:', modal);
+  modal.style.display='flex';
+  console.log('모달 display:', modal.style.display);
 }
 window.toggleHeart=toggleHeart;
 
