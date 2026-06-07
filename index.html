@@ -652,8 +652,9 @@ function initFirebase(){
   window.serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
   window.deleteField = firebase.firestore.FieldValue.delete;
   console.log('✅ Firebase 초기화 완료');
-  // 앱 초기화 시작
-  initApp();
+  testConnection();
+  // 스플래시 후 코드 입력 화면으로
+  setTimeout(()=>goScreen('s-code'),1800);
 }
 initFirebase();
 
@@ -685,10 +686,6 @@ async function testConnection(){
     // 연결 실패해도 앱은 계속 진행
   }
 }
-// initApp은 Firebase 초기화 완료 후 호출됨
-function initApp(){
-  testConnection();
-
 // ── DATA ─────────────────────────────────────────
 const QUESTIONS={
   "🎵 취향 & 관심사":["요즘 자주 듣는 노래는?","최근에 본 영화나 드라마 중 기억에 남는 거 있어?","요즘 꽂혀 있는 게 있어?","즐겨 보는 유튜브 채널 있어?","취미 중에 가장 진심인 게 뭐야?","좋아하는 음식 장르가 있어?","가장 좋아하는 계절은?"],
@@ -1041,9 +1038,9 @@ function listenGuestsForUser(){
     renderPeople();
   });
 }
+
+function listenGuests(){
   onSnapshot(query(GUESTS_REF(),orderBy('joinedAt')),(snap)=>{
-    st.guests={};
-    const now=Date.now();
     snap.forEach(d=>{
       const data=d.data();
       const lastSeen=data.lastSeen?.toMillis?.()|| now;
@@ -1885,13 +1882,11 @@ function backTopicToPick(){
 }
 window.backTopicToPick=backTopicToPick;
 
+function backToHome(){renderAdminHome();}
+window.backToHome=backToHome;
+
 window.goScreen=goScreen;
 window.submitCode=submitCode;
-
-// 스플래시 → 코드 입력 화면
-setTimeout(()=>goScreen('s-code'),1800);
-
-} // initApp 끝
 
 </script>
 </body>
