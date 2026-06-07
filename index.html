@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>12:12 — Mission: 썸 가능</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -14,7 +14,7 @@
   --text:#1a1a1a;--muted:#888;--bg:#f5f5f3;--white:#fff;
   --border:#e8e4df;--border2:#d0ccc6;--r:14px;--r2:24px;
 }
-html,body{height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text);}
+html,body{height:100%;background:var(--bg);font-family:'Pretendard',sans-serif;color:var(--text);}
 #app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;overflow:hidden;}
 .screen{display:none;min-height:100vh;flex-direction:column;}
 .screen.on{display:flex;}
@@ -26,10 +26,11 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif
 .sd{width:6px;height:6px;border-radius:50%;background:#333;animation:sdp 1.2s ease-in-out infinite;}
 .sd:nth-child(2){animation-delay:.2s;}.sd:nth-child(3){animation-delay:.4s;}
 @keyframes sdp{0%,100%{background:#333;}50%{background:var(--pink);}}
-.screen-body{padding:28px 24px;flex:1;display:flex;flex-direction:column;overflow-y:auto;}
-.step-bar{display:flex;gap:4px;margin-bottom:28px;}
-.step-seg{height:3px;border-radius:2px;flex:1;background:var(--border);}
-.step-seg.on{background:var(--pink);}
+.screen-body{padding:0 0 24px;flex:1;display:flex;flex-direction:column;overflow-y:auto;}
+.screen-body-inner{padding:24px 24px 0;}
+.step-bar{display:flex;gap:0;margin-bottom:0;border-bottom:1px solid var(--border);background:var(--white);}
+.step-seg{flex:1;height:44px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:default;transition:all .2s;}
+.step-seg.on{color:var(--pink);border-bottom-color:var(--pink);font-weight:700;}
 .page-title{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px;}
 .page-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
 .field-lbl{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:6px;letter-spacing:.4px;}
@@ -206,37 +207,60 @@ textarea{resize:none;line-height:1.5;}
 <!-- SPLASH -->
 <div class="screen on" id="s-splash">
   <div class="splash-inner fade">
-    <h1>12:12</h1>
-    <div class="sub">Mission: 썸 가능</div>
+    <div style="display:flex;align-items:flex-end;justify-content:center;margin-bottom:6px;">
+      <div style="font-size:76px;font-weight:900;color:var(--white);letter-spacing:-4px;line-height:1;">WR</div>
+      <div style="font-size:76px;font-weight:900;color:#22c55e;letter-spacing:-4px;line-height:1;">1</div>
+    </div>
+    <div style="font-size:13px;color:#888;letter-spacing:6px;text-transform:uppercase;margin-bottom:28px;">CONNECT</div>
     <div class="splash-dots"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>
-    <button onclick="if(typeof openAdmin==='function')openAdmin();else alert('잠시 후 다시 시도해주세요')" style="margin-top:48px;padding:8px 20px;border-radius:99px;border:1px solid #333;background:none;color:#555;font-size:12px;font-family:inherit;cursor:pointer;letter-spacing:.5px;">관리자로 입장</button>
+    <button onclick="if(typeof openAdmin==='function')openAdmin();else alert('잠시 후 다시 시도해주세요')" style="margin-top:40px;padding:8px 20px;border-radius:99px;border:1px solid #333;background:none;color:#555;font-size:12px;font-family:inherit;cursor:pointer;letter-spacing:.5px;">관리자로 입장</button>
   </div>
 </div>
 
 <!-- ENTER CODE -->
-<div class="screen" id="s-code">
-  <div class="screen-body">
-    <div class="step-bar"><div class="step-seg on"></div><div class="step-seg"></div><div class="step-seg"></div><div class="step-seg"></div></div>
-    <div class="page-title">입장 코드 입력</div>
-    <div class="page-sub">관리자가 배포한 4자리 코드를 입력해주세요</div>
-    <div class="code-grid">
-      <input type="text" class="code-digit" id="cd-0" maxlength="1" inputmode="numeric" oninput="cdInput(this,0)" onkeydown="cdKey(this,0)">
-      <input type="text" class="code-digit" id="cd-1" maxlength="1" inputmode="numeric" oninput="cdInput(this,1)" onkeydown="cdKey(this,1)">
-      <input type="text" class="code-digit" id="cd-2" maxlength="1" inputmode="numeric" oninput="cdInput(this,2)" onkeydown="cdKey(this,2)">
-      <input type="text" class="code-digit" id="cd-3" maxlength="1" inputmode="numeric" oninput="cdInput(this,3)" onkeydown="cdKey(this,3)">
+<div class="screen" id="s-code" style="background:#0f0f0f;">
+  <div class="screen-body" style="background:#0f0f0f;justify-content:space-between;">
+    <!-- 상단 로고 -->
+    <div style="text-align:center;padding-top:32px;">
+      <div style="display:flex;align-items:flex-end;justify-content:center;">
+        <div style="font-size:52px;font-weight:900;color:#fff;letter-spacing:-3px;line-height:1;">WR</div>
+        <div style="font-size:52px;font-weight:900;color:#22c55e;letter-spacing:-3px;line-height:1;">1</div>
+      </div>
+      <div style="font-size:11px;color:#555;letter-spacing:5px;text-transform:uppercase;margin-top:4px;">CONNECT</div>
     </div>
-    <div class="code-hint">행사장에 부착된 QR을 스캔하면 자동으로 이 화면이 열려요</div>
-    <div style="margin-top:auto;">
-      <button class="btn btn-pink" onclick="submitCode()">입장하기</button>
-      <button class="btn btn-gray" onclick="openAdmin()">관리자로 입장</button>
+
+    <!-- 코드 입력 영역 -->
+    <div style="text-align:center;">
+      <div style="font-size:18px;font-weight:600;color:#fff;margin-bottom:6px;">입장 코드 입력</div>
+      <div style="font-size:13px;color:#555;margin-bottom:28px;">관리자가 배포한 4자리 코드를 입력해주세요</div>
+      <div class="code-grid" style="justify-content:center;margin-bottom:10px;">
+        <input type="text" class="code-digit" id="cd-0" maxlength="1" inputmode="numeric" oninput="cdInput(this,0)" onkeydown="cdKey(this,0)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
+        <input type="text" class="code-digit" id="cd-1" maxlength="1" inputmode="numeric" oninput="cdInput(this,1)" onkeydown="cdKey(this,1)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
+        <input type="text" class="code-digit" id="cd-2" maxlength="1" inputmode="numeric" oninput="cdInput(this,2)" onkeydown="cdKey(this,2)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
+        <input type="text" class="code-digit" id="cd-3" maxlength="1" inputmode="numeric" oninput="cdInput(this,3)" onkeydown="cdKey(this,3)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
+      </div>
+      <div style="font-size:11px;color:#444;margin-bottom:0;">행사장에 부착된 QR을 스캔하면 자동으로 이 화면이 열려요</div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div style="padding-bottom:12px;">
+      <button onclick="submitCode()" style="width:100%;padding:16px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:#22c55e;color:#000;font-family:inherit;letter-spacing:-.3px;margin-bottom:10px;">입장하기</button>
+      <button onclick="openAdmin()" style="width:100%;padding:15px;border-radius:var(--r2);font-size:14px;font-weight:500;cursor:pointer;border:1px solid #333;background:transparent;color:#555;font-family:inherit;">관리자로 입장</button>
     </div>
   </div>
 </div>
 
 <!-- GENDER + NICK -->
 <div class="screen" id="s-gender">
-  <div class="screen-body">
-    <div class="step-bar"><div class="step-seg on"></div><div class="step-seg on"></div><div class="step-seg"></div><div class="step-seg"></div></div>
+  <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;">
+    <div class="step-bar">
+      <div class="step-seg on">입장</div>
+      <div class="step-seg on">정보 입력</div>
+      <div class="step-seg">프로필</div>
+      <div class="step-seg">완료</div>
+    </div>
+    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;">
+    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;">
     <div class="page-title">안녕하세요 👋</div>
     <div class="page-sub">성별을 선택하고 별명을 입력해주세요</div>
     <div class="gender-row">
@@ -247,22 +271,31 @@ textarea{resize:none;line-height:1.5;}
       <label class="field-lbl">별명</label>
       <input type="text" id="inp-nick" placeholder="ex) 새벽 라면 좋아하는 준호" maxlength="20">
     </div>
-    <div style="margin-top:auto;">
+    <div style="margin-top:auto;padding:0 24px 24px;">
       <button class="btn btn-pink" onclick="goToProfile()">다음으로</button>
+    </div>
     </div>
   </div>
 </div>
 
 <!-- PROFILE -->
 <div class="screen" id="s-profile">
-  <div class="screen-body">
-    <div class="step-bar"><div class="step-seg on"></div><div class="step-seg on"></div><div class="step-seg on"></div><div class="step-seg"></div></div>
+  <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;">
+    <div class="step-bar">
+      <div class="step-seg on">입장</div>
+      <div class="step-seg on">정보 입력</div>
+      <div class="step-seg on">프로필</div>
+      <div class="step-seg">완료</div>
+    </div>
+    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;overflow-y:auto;">
+    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;overflow-y:auto;">
     <div class="page-title">나를 소개해줘</div>
     <div class="page-sub">각 파트에서 랜덤으로 뽑힌 질문이에요 ✨<br>작성 후 뒤로가기로 수정할 수 있어요</div>
     <div id="prof-qs"></div>
-    <div style="margin-top:16px;">
+    <div style="margin-top:16px;padding:0 0 24px;">
       <button class="btn btn-pink" onclick="submitProfile()">프로필 완성!</button>
       <button class="btn btn-gray" onclick="goScreen('s-gender')">← 뒤로가기</button>
+    </div>
     </div>
   </div>
 </div>
