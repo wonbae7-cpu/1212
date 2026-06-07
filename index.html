@@ -1041,22 +1041,39 @@ function listenGuestsForUser(){
 
 function listenGuests(){
   onSnapshot(query(GUESTS_REF(),orderBy('joinedAt')),(snap)=>{
+    const now=Date.now();
+    st.guests={};
     snap.forEach(d=>{
       const data=d.data();
-      const lastSeen=data.lastSeen?.toMillis?.()|| now;
+      const lastSeen=data.lastSeen?.toMillis?.()||now;
       const isOnline=data.online!==false&&(now-lastSeen)<30000;
       st.guests[d.id]={...data,online:isOnline};
     });
     updateAdminStats();
     renderGuestListAdmin();
-    renderPeople(); // 항상 호출
-    // 관리자 홈 화면도 업데이트
+    renderPeople();
     if(st.isAdmin){
       updateAdminHomeStats();
       renderAdminHomeGuests();
       renderAdminHomeRooms();
     }
   });
+
+  // 15초마다 온라인 상태 재계산
+  setInterval(()=>{
+    const now=Date.now();
+    Object.keys(st.guests).forEach(id=>{
+      const g=st.guests[id];
+      const lastSeen=g.lastSeen?.toMillis?.()||now;
+      st.guests[id].online=g.online!==false&&(now-lastSeen)<30000;
+    });
+    updateAdminStats();
+    renderGuestListAdmin();
+    if(st.isAdmin){
+      updateAdminHomeStats();
+      renderAdminHomeGuests();
+    }
+  },15000);
 }
 
 // ── 강퇴 ─────────────────────────────────────────
