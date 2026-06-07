@@ -1276,11 +1276,14 @@ function renderPeople(){
   list.innerHTML=guests.map(u=>`
     <div class="pc">
       <div class="pc-top">
-        <div class="av av-${u.gender}">${u.nick[0]}</div>
+        ${u.profilePhoto
+          ? `<img src="${u.profilePhoto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5px solid #22c55e;flex-shrink:0;">`
+          : `<div class="av av-${u.gender}">${u.nick[0]}</div>`
+        }
         <div><div class="pc-name">${u.nick}</div><div class="pc-meta">${u.gender==='m'?'남성':'여성'}</div></div>
         ${st.heartsEnabled
           ?`<button class="hb ${st.hearts[u.id]?'on':''}" onclick="toggleHeart('${u.id}','${u.nick}',this)">${st.hearts[u.id]?'❤️':'🤍'}</button>`
-          :'<span style="margin-left:auto;font-size:10px;color:var(--muted);text-align:right;">룸 이동 후<br>하트 가능</span>'}
+          :'<span style="margin-left:auto;font-size:10px;color:#555;text-align:right;">룸 이동 후<br>하트 가능</span>'}
       </div>
       <div class="pc-qa">${Object.values(u.answers||{}).flat().slice(0,4).map(qa=>`<b>${qa.q}</b><br>"${qa.a}"`).join('<br><br>')}</div>
     </div>`).join('');
@@ -1355,16 +1358,58 @@ window.drawCard=drawCard;
 // ── MY PROFILE ───────────────────────────────────
 function renderMyProfile(){
   const el=document.getElementById('my-prof-view');
-  let h=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-    <div class="av av-${st.gender||'m'}" style="width:52px;height:52px;font-size:20px;">${st.nick?.[0]||'?'}</div>
-    <div><div style="font-size:17px;font-weight:700;">${st.nick||'나'}</div>
-    <div style="font-size:12px;color:var(--muted);">${st.gender==='f'?'여성 👩':'남성 👨'}</div></div></div>`;
+  const photoSrc=st.profilePhoto||null;
+  let h=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+    <div style="position:relative;cursor:pointer;" onclick="document.getElementById('photo-upload').click()">
+      ${photoSrc
+        ? `<img src="${photoSrc}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #22c55e;">`
+        : `<div class="av av-${st.gender||'m'}" style="width:60px;height:60px;font-size:22px;">${st.nick?.[0]||'?'}</div>`
+      }
+      <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:11px;">📷</div>
+    </div>
+    <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
+    <div>
+      <div style="font-size:17px;font-weight:700;color:#fff;">${st.nick||'나'}</div>
+      <div style="font-size:12px;color:#555;">${st.gender==='f'?'여성 👩':'남성 👨'}</div>
+      <div style="font-size:10px;color:#333;margin-top:2px;">📷 눌러서 사진 변경</div>
+    </div>
+  </div>`;
   Object.entries(st.answers).forEach(([sec,qas])=>{
     h+=`<div class="q-section">${sec}</div>`;
-    qas.forEach(({q,a})=>{h+=`<div class="q-card"><div class="qt">${q}</div><div style="font-size:13px;padding:4px 0;">${a}</div></div>`;});
+    qas.forEach(({q,a})=>{h+=`<div class="q-card"><div class="qt">${q}</div><div style="font-size:13px;padding:4px 0;color:#aaa;">${a}</div></div>`;});
   });
   el.innerHTML=h;
 }
+
+async function uploadPhoto(input){
+  const file=input.files[0];
+  if(!file) return;
+  // 이미지 압축 (최대 200x200)
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    const img=new Image();
+    img.onload=async()=>{
+      const canvas=document.createElement('canvas');
+      const max=200;
+      let w=img.width, h=img.height;
+      if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const base64=canvas.toDataURL('image/jpeg',0.7);
+      st.profilePhoto=base64;
+      // Firebase에 저장
+      if(window.db&&st.myId){
+        try{
+          await updateDoc(doc(db,'guests',st.myId),{profilePhoto:base64});
+        }catch(e){console.log('사진 저장 실패',e);}
+      }
+      renderMyProfile();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+window.uploadPhoto=uploadPhoto;
 
 // ── OVERLAY ──────────────────────────────────────
 function showOverlay(topic,dur){
