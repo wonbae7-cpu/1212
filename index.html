@@ -15,8 +15,8 @@
   --border:#e8e4df;--border2:#d0ccc6;--r:14px;--r2:24px;
 }
 html,body{height:100%;background:var(--bg);font-family:'Pretendard',sans-serif;color:var(--text);}
-#app{max-width:430px;margin:0 auto;height:100vh;background:#0f0f0f;position:relative;overflow:hidden;}
-.screen{display:none;height:100vh;flex-direction:column;overflow:hidden;}
+#app{max-width:430px;margin:0 auto;min-height:100vh;background:#0f0f0f;position:relative;overflow:hidden;}
+.screen{display:none;min-height:100vh;flex-direction:column;}
 .screen.on{display:flex;}
 #s-splash{background:#0f0f0f;align-items:center;justify-content:center;}
 .splash-inner{text-align:center;}
@@ -356,7 +356,7 @@ textarea{resize:none;line-height:1.5;}
 </div>
 
 <!-- MAIN APP -->
-<div class="screen" id="s-main" style="background:#0f0f0f;display:none;flex-direction:column;height:100vh;overflow:hidden;">
+<div class="screen" id="s-main" style="background:#0f0f0f;flex-direction:column;height:100vh;overflow:hidden;">
   <div class="top-bar" style="background:#0f0f0f;border-bottom:1px solid #1e1e1e;padding:14px 20px 0;">
     <div class="tb-head" style="margin-bottom:12px;">
       <button onclick="openBackModal()" style="background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;display:flex;align-items:center;gap:4px;font-size:13px;color:#555;font-family:'Pretendard',sans-serif;z-index:1;">
