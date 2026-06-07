@@ -15,7 +15,7 @@
   --border:#e8e4df;--border2:#d0ccc6;--r:14px;--r2:24px;
 }
 html,body{height:100%;background:var(--bg);font-family:'Pretendard',sans-serif;color:var(--text);}
-#app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;overflow:hidden;}
+#app{max-width:430px;margin:0 auto;min-height:100vh;background:#0f0f0f;position:relative;overflow:hidden;}
 .screen{display:none;min-height:100vh;flex-direction:column;}
 .screen.on{display:flex;}
 #s-splash{background:#0f0f0f;align-items:center;justify-content:center;}
@@ -1147,7 +1147,7 @@ function showRoomAssignment(roomName, duration){
   setTimeout(()=>{
     const h=banner.offsetHeight;
     const topBar=document.querySelector('#s-main .top-bar');
-    if(topBar) topBar.style.marginTop=h+'px';
+    if(topBar) topBar.style.paddingTop=(h+14)+'px';
   },50);
 
   // 타이머 시작
