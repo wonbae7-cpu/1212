@@ -867,6 +867,13 @@ function showRoomAssignment(roomName, duration){
     </div>`;
   document.body.appendChild(banner);
 
+  // 배너 높이만큼 상단바 밀어내기
+  setTimeout(()=>{
+    const h=banner.offsetHeight;
+    const topBar=document.querySelector('#s-main .top-bar');
+    if(topBar) topBar.style.marginTop=h+'px';
+  },50);
+
   // 타이머 시작
   if(duration>0){
     st.roomBannerLeft=duration;
