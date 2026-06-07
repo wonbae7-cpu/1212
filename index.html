@@ -849,11 +849,32 @@ async function submitProfile(){
 
   renderMyProfile();
 
-  // 이미 게임이 시작된 경우 대기화면 건너뛰고 바로 메인으로
+  // 이미 게임이 시작된 경우 — 기존 룸 배정에 추가
   if(st.currentStep>=3){
+    try{
+      const sessionSnap=await getDoc(SESSION_REF());
+      if(sessionSnap.exists&&sessionSnap.data()){
+        const sd=sessionSnap.data();
+        if(sd.roomAssignment){
+          st.currentRoomAssignment=sd.roomAssignment;
+          // 내 ID가 배정에 없으면 인원 적은 룸에 자동 배정
+          if(!sd.roomAssignment[st.myId]){
+            const roomNames=['FUNWAY STORE','Class ROOM 1','Class ROOM 2'];
+            const roomCounts={};
+            roomNames.forEach(r=>roomCounts[r]=0);
+            Object.values(sd.roomAssignment).forEach(r=>{if(roomCounts[r]!==undefined)roomCounts[r]++;});
+            const myRoom=roomNames.sort((a,b)=>roomCounts[a]-roomCounts[b])[0];
+            const newAssignment={...sd.roomAssignment,[st.myId]:myRoom};
+            await setDoc(SESSION_REF(),{roomAssignment:newAssignment},{merge:true});
+            st.currentRoomAssignment=newAssignment;
+          }
+        }
+      }
+    }catch(e){console.log('룸 배정 복원 실패',e);}
     goScreen('s-main');
     renderPeople();
     listenMyDoc();
+    listenSession();
   } else {
     document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
     goScreen('s-wait');
