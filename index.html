@@ -982,9 +982,23 @@ window.switchTab=switchTab;
 
 // ── PEOPLE ───────────────────────────────────────
 function renderPeople(){
-  const opp=st.gender==='m'?'f':'m';
   const list=document.getElementById('people-list');
-  const guests=Object.values(st.guests).filter(g=>g.gender===opp);
+  const assignment=st.currentRoomAssignment||{};
+  const hasAssignment=Object.keys(assignment).length>0;
+
+  let guests;
+  if(hasAssignment&&st.myId&&assignment[st.myId]){
+    const myRoom=assignment[st.myId];
+    // 같은 룸에 배정된 나를 제외한 전체
+    guests=Object.values(st.guests).filter(g=>
+      g.id!==st.myId && assignment[g.id]===myRoom
+    );
+  } else {
+    // 배정 전엔 반대 성별 전체
+    const opp=st.gender==='m'?'f':'m';
+    guests=Object.values(st.guests).filter(g=>g.gender===opp);
+  }
+
   if(!guests.length){
     list.innerHTML='<div style="text-align:center;padding:40px 0;font-size:13px;color:var(--muted);">아직 상대방이 입장하지 않았어요</div>';
     return;
