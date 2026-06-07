@@ -50,14 +50,17 @@ textarea{resize:none;line-height:1.5;}
 .code-hint{font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px;}
 .gender-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
 .g-card{padding:28px 12px;border-radius:var(--r);border:2px solid var(--border);text-align:center;cursor:pointer;transition:all .2s;background:var(--white);}
-.g-card.sel{border-color:var(--pink);background:var(--pink3);}
+.g-card.sel{border-color:#22c55e!important;background:#0a2a14!important;}
+.g-card.sel span{color:#22c55e!important;}
 .g-card .gi{font-size:36px;margin-bottom:8px;}
 .g-card span{font-size:15px;font-weight:600;}
-.q-section{font-size:11px;font-weight:700;color:var(--pink);letter-spacing:.5px;margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
-.q-section::after{content:'';flex:1;height:1px;background:var(--pink3);}
-.q-card{background:var(--bg);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;}
-.q-card .qt{font-size:13px;color:var(--muted);margin-bottom:7px;}
-.q-card textarea{background:var(--white);min-height:52px;font-size:13px;padding:9px 12px;}
+.q-section{font-size:11px;font-weight:700;color:#22c55e;letter-spacing:.5px;margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.q-section::after{content:'';flex:1;height:1px;background:#1e1e1e;}
+.q-card{background:#1a1a1a;border-radius:var(--r);padding:12px 14px;margin-bottom:10px;border:1px solid #2a2a2a;}
+.q-card .qt{font-size:13px;color:#aaa;margin-bottom:7px;}
+.q-card textarea{background:#111;min-height:52px;font-size:13px;padding:9px 12px;border:1px solid #2a2a2a;color:#fff;border-radius:10px;}
+.q-card textarea::placeholder{color:#444;}
+.q-card textarea:focus{border-color:#22c55e;}
 #s-main{background:var(--bg);}
 .top-bar{background:var(--white);padding:14px 20px 0;border-bottom:1px solid var(--border);position:relative;}
 .tb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -219,9 +222,9 @@ textarea{resize:none;line-height:1.5;}
 
 <!-- ENTER CODE -->
 <div class="screen" id="s-code" style="background:#0f0f0f;">
-  <div class="screen-body" style="background:#0f0f0f;justify-content:space-between;">
+  <div class="screen-body" style="background:#0f0f0f;justify-content:space-between;padding:0 28px;">
     <!-- 상단 로고 -->
-    <div style="text-align:center;padding-top:32px;">
+    <div style="text-align:center;padding-top:40px;">
       <div style="display:flex;align-items:flex-end;justify-content:center;">
         <div style="font-size:52px;font-weight:900;color:#fff;letter-spacing:-3px;line-height:1;">WR</div>
         <div style="font-size:52px;font-weight:900;color:#22c55e;letter-spacing:-3px;line-height:1;">1</div>
@@ -233,68 +236,78 @@ textarea{resize:none;line-height:1.5;}
     <div style="text-align:center;">
       <div style="font-size:18px;font-weight:600;color:#fff;margin-bottom:6px;">입장 코드 입력</div>
       <div style="font-size:13px;color:#555;margin-bottom:28px;">관리자가 배포한 4자리 코드를 입력해주세요</div>
-      <div class="code-grid" style="justify-content:center;margin-bottom:10px;">
-        <input type="text" class="code-digit" id="cd-0" maxlength="1" inputmode="numeric" oninput="cdInput(this,0)" onkeydown="cdKey(this,0)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
-        <input type="text" class="code-digit" id="cd-1" maxlength="1" inputmode="numeric" oninput="cdInput(this,1)" onkeydown="cdKey(this,1)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
-        <input type="text" class="code-digit" id="cd-2" maxlength="1" inputmode="numeric" oninput="cdInput(this,2)" onkeydown="cdKey(this,2)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
-        <input type="text" class="code-digit" id="cd-3" maxlength="1" inputmode="numeric" oninput="cdInput(this,3)" onkeydown="cdKey(this,3)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;">
+      <div class="code-grid" style="justify-content:center;margin-bottom:12px;gap:12px;">
+        <input type="text" class="code-digit" id="cd-0" maxlength="1" inputmode="numeric" oninput="cdInput(this,0)" onkeydown="cdKey(this,0)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;border-radius:12px;">
+        <input type="text" class="code-digit" id="cd-1" maxlength="1" inputmode="numeric" oninput="cdInput(this,1)" onkeydown="cdKey(this,1)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;border-radius:12px;">
+        <input type="text" class="code-digit" id="cd-2" maxlength="1" inputmode="numeric" oninput="cdInput(this,2)" onkeydown="cdKey(this,2)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;border-radius:12px;">
+        <input type="text" class="code-digit" id="cd-3" maxlength="1" inputmode="numeric" oninput="cdInput(this,3)" onkeydown="cdKey(this,3)" style="background:#1a1a1a;border:1.5px solid #333;color:#fff;border-radius:12px;">
       </div>
       <div style="font-size:11px;color:#444;margin-bottom:0;">행사장에 부착된 QR을 스캔하면 자동으로 이 화면이 열려요</div>
     </div>
 
     <!-- 버튼 영역 -->
-    <div style="padding-bottom:12px;">
-      <button onclick="submitCode()" style="width:100%;padding:16px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:#22c55e;color:#000;font-family:inherit;letter-spacing:-.3px;margin-bottom:10px;">입장하기</button>
-      <button onclick="openAdmin()" style="width:100%;padding:15px;border-radius:var(--r2);font-size:14px;font-weight:500;cursor:pointer;border:1px solid #333;background:transparent;color:#555;font-family:inherit;">관리자로 입장</button>
+    <div style="padding-bottom:40px;">
+      <button onclick="submitCode()" style="width:100%;padding:16px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:#22c55e;color:#000;font-family:'Pretendard',sans-serif;letter-spacing:-.3px;margin-bottom:12px;">입장하기</button>
+      <button onclick="openAdmin()" style="width:100%;padding:15px;border-radius:var(--r2);font-size:14px;font-weight:500;cursor:pointer;border:1px solid #2a2a2a;background:transparent;color:#555;font-family:'Pretendard',sans-serif;">관리자로 입장</button>
     </div>
   </div>
 </div>
 
 <!-- GENDER + NICK -->
-<div class="screen" id="s-gender">
+<div class="screen" id="s-gender" style="background:#0f0f0f;">
   <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;">
-    <div class="step-bar">
-      <div class="step-seg on">입장</div>
-      <div class="step-seg on">정보 입력</div>
-      <div class="step-seg">프로필</div>
-      <div class="step-seg">완료</div>
+    <!-- 탭바 -->
+    <div class="step-bar" style="background:#0f0f0f;border-bottom:1px solid #1e1e1e;">
+      <div class="step-seg on" style="color:#22c55e;border-bottom-color:#22c55e;cursor:pointer;" onclick="goScreen('s-code')">입장</div>
+      <div class="step-seg on" style="color:#22c55e;border-bottom-color:#22c55e;">정보 입력</div>
+      <div class="step-seg" style="color:#333;">프로필</div>
+      <div class="step-seg" style="color:#333;">완료</div>
     </div>
-    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;">
-    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;">
-    <div class="page-title">안녕하세요 👋</div>
-    <div class="page-sub">성별을 선택하고 별명을 입력해주세요</div>
-    <div class="gender-row">
-      <div class="g-card" id="gm" onclick="pickGender('m')"><div class="gi">👨</div><span>남성</span></div>
-      <div class="g-card" id="gf" onclick="pickGender('f')"><div class="gi">👩</div><span>여성</span></div>
-    </div>
-    <div class="field-g">
-      <label class="field-lbl">별명</label>
-      <input type="text" id="inp-nick" placeholder="ex) 새벽 라면 좋아하는 준호" maxlength="20">
-    </div>
-    <div style="margin-top:auto;padding:0 24px 24px;">
-      <button class="btn btn-pink" onclick="goToProfile()">다음으로</button>
-    </div>
+    <div style="padding:32px 28px 0;flex:1;display:flex;flex-direction:column;">
+      <div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-.5px;">안녕하세요 👋</div>
+      <div style="font-size:14px;color:#555;margin-bottom:32px;">성별을 선택하고 별명을 입력해주세요</div>
+
+      <!-- 성별 카드 -->
+      <div class="gender-row" style="margin-bottom:28px;">
+        <div class="g-card" id="gm" onclick="pickGender('m')" style="background:#1a1a1a;border:1.5px solid #2a2a2a;border-radius:16px;">
+          <div class="gi">👨</div><span style="color:#fff;">남성</span>
+        </div>
+        <div class="g-card" id="gf" onclick="pickGender('f')" style="background:#1a1a1a;border:1.5px solid #2a2a2a;border-radius:16px;">
+          <div class="gi">👩</div><span style="color:#fff;">여성</span>
+        </div>
+      </div>
+
+      <!-- 별명 입력 -->
+      <div class="field-g">
+        <label class="field-lbl" style="color:#555;">별명</label>
+        <input type="text" id="inp-nick" placeholder="ex) 새벽 라면 좋아하는 준호" maxlength="20"
+          style="background:#1a1a1a;border:1.5px solid #2a2a2a;color:#fff;border-radius:12px;">
+      </div>
+
+      <div style="margin-top:auto;padding-bottom:40px;">
+        <button class="btn" onclick="goToProfile()"
+          style="background:#22c55e;color:#000;font-weight:700;border-radius:var(--r2);">다음으로</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- PROFILE -->
-<div class="screen" id="s-profile">
+<div class="screen" id="s-profile" style="background:#0f0f0f;">
   <div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;">
-    <div class="step-bar">
-      <div class="step-seg on">입장</div>
-      <div class="step-seg on">정보 입력</div>
-      <div class="step-seg on">프로필</div>
-      <div class="step-seg">완료</div>
+    <div class="step-bar" style="background:#0f0f0f;border-bottom:1px solid #1e1e1e;">
+      <div class="step-seg on" style="color:#22c55e;border-bottom-color:#22c55e;cursor:pointer;" onclick="goScreen('s-code')">입장</div>
+      <div class="step-seg on" style="color:#22c55e;border-bottom-color:#22c55e;cursor:pointer;" onclick="goScreen('s-gender')">정보 입력</div>
+      <div class="step-seg on" style="color:#22c55e;border-bottom-color:#22c55e;">프로필</div>
+      <div class="step-seg" style="color:#333;">완료</div>
     </div>
-    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;overflow-y:auto;">
-    <div style="padding:24px 24px 0;flex:1;display:flex;flex-direction:column;overflow-y:auto;">
-    <div class="page-title">나를 소개해줘</div>
-    <div class="page-sub">각 파트에서 랜덤으로 뽑힌 질문이에요 ✨<br>작성 후 뒤로가기로 수정할 수 있어요</div>
+    <div style="padding:28px 28px 0;flex:1;display:flex;flex-direction:column;overflow-y:auto;">
+    <div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-.5px;">나를 소개해줘</div>
+    <div style="font-size:13px;color:#555;margin-bottom:24px;line-height:1.5;">각 파트에서 랜덤으로 뽑힌 질문이에요 ✨<br>작성 후 뒤로가기로 수정할 수 있어요</div>
     <div id="prof-qs"></div>
-    <div style="margin-top:16px;padding:0 0 24px;">
-      <button class="btn btn-pink" onclick="submitProfile()">프로필 완성!</button>
-      <button class="btn btn-gray" onclick="goScreen('s-gender')">← 뒤로가기</button>
+    <div style="margin-top:16px;padding:0 0 40px;">
+      <button class="btn" onclick="submitProfile()" style="background:#22c55e;color:#000;font-weight:700;border-radius:var(--r2);margin-bottom:10px;">프로필 완성!</button>
+      <button class="btn" onclick="goScreen('s-gender')" style="background:transparent;color:#555;border:1px solid #2a2a2a;border-radius:var(--r2);">← 뒤로가기</button>
     </div>
     </div>
   </div>
@@ -801,12 +814,16 @@ function uid(){return Math.random().toString(36).slice(2,10);}
 
 async function submitCode(){
   const c=getCode();
-  console.log('입력된 코드:', c, '길이:', c.length);
-  if(c.length<4){alert('4자리 코드를 입력해주세요. 현재: '+c);return;}
+  if(c.length<4){alert('4자리 코드를 입력해주세요.');return;}
+  // db가 아직 준비 안 됐으면 기본 코드로 비교
+  if(!window.db){
+    if(c==='1212') goScreen('s-gender');
+    else alert('코드가 올바르지 않아요. 다시 확인해주세요.');
+    return;
+  }
   try{
     const snap=await getDoc(SESSION_REF());
     const code=(snap.exists&&snap.data()&&snap.data().code)||'1212';
-    console.log('Firebase 코드:', code);
     if(c===code){
       goScreen('s-gender');
     } else {
@@ -834,23 +851,22 @@ async function goToProfile(){
   if(!n){alert('별명을 입력해주세요');return;}
   st.nick=n;
 
+  // db 준비 안 됐으면 바로 새 참가자로
+  if(!window.db){
+    buildProfile();
+    goScreen('s-profile');
+    return;
+  }
+
   // 같은 닉네임 기존 데이터 찾기
   try{
     const snap=await db.collection('guests').where('nick','==',n).get();
     if(!snap.empty){
       const existing=snap.docs[0].data();
-      // 기존 데이터 복구
       st.myId=existing.id;
       st.gender=existing.gender||st.gender;
       st.answers=existing.answers||{};
-
-      // 온라인 상태 갱신
-      await updateDoc(doc(db,'guests',st.myId),{
-        online:true,
-        lastSeen:serverTimestamp()
-      });
-
-      // 세션에서 룸 배정 정보 가져오기
+      await updateDoc(doc(db,'guests',st.myId),{online:true,lastSeen:serverTimestamp()});
       const sessionSnap=await getDoc(SESSION_REF());
       if(sessionSnap.exists&&sessionSnap.data()){
         const sd=sessionSnap.data();
@@ -859,16 +875,11 @@ async function goToProfile(){
         if(sd.roomHistory) st.roomHistory=sd.roomHistory;
         if(sd.step>=3) st.heartsEnabled=true;
       }
-
       renderMyProfile();
-
-      // 하트비트 재시작
       clearInterval(st.heartbeatInt);
       st.heartbeatInt=setInterval(async()=>{
         try{ await updateDoc(doc(db,'guests',st.myId),{lastSeen:serverTimestamp(),online:true}); }catch(e){}
       },10000);
-
-      // 바로 메인으로
       alert(`반갑습니다! ${n}님, 다시 돌아오셨군요 😊`);
       goScreen('s-main');
       listenSession();
@@ -879,7 +890,6 @@ async function goToProfile(){
     }
   }catch(e){console.log('재연결 확인 실패:', e);}
 
-  // 새 참가자
   buildProfile();
   goScreen('s-profile');
 }
@@ -910,8 +920,22 @@ async function submitProfile(){
     });
   });
 
-  // 기존 ID 재사용 (뒤로가기로 수정한 경우 중복 방지)
   if(!st.myId) st.myId=uid();
+
+  // db 준비될 때까지 최대 5초 대기
+  let waited=0;
+  while(!window.db&&waited<50){
+    await new Promise(r=>setTimeout(r,100));
+    waited++;
+  }
+
+  if(!window.db){
+    // db 없이 로컬로만 진행
+    renderMyProfile();
+    document.getElementById('wait-nick').textContent=st.nick+'님, 잠시만요!';
+    goScreen('s-wait');
+    return;
+  }
 
   // 기존 게스트 문서 삭제 후 새로 등록 (중복 방지)
   try{
