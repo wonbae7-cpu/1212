@@ -472,8 +472,8 @@ textarea{resize:none;line-height:1.5;}
 
     <!-- 모임 종료 -->
     <div style="margin-top:24px;padding:20px 0;border-top:1px solid var(--border);">
-      <button onclick="clearAllGuests()" style="width:100%;padding:12px;border-radius:var(--r2);font-size:14px;font-weight:600;cursor:pointer;border:none;background:var(--bg);color:var(--muted);border:1px solid var(--border);font-family:inherit;margin-bottom:8px;">
-        🗑️ 게스트 데이터 초기화
+      <button onclick="fullReset()" style="width:100%;padding:12px;border-radius:var(--r2);font-size:14px;font-weight:600;cursor:pointer;border:1px solid #e74c3c;background:transparent;color:#e74c3c;font-family:inherit;margin-bottom:8px;">
+        🔄 전체 초기화 (새 행사 준비)
       </button>
       <button onclick="endEvent()" style="width:100%;padding:15px;border-radius:var(--r2);font-size:15px;font-weight:700;cursor:pointer;border:none;background:#1a1a1a;color:var(--white);font-family:inherit;">
         🏁 모임 종료
@@ -2311,6 +2311,29 @@ async function stopTimer(){
   renderAdminHomeScreen();
 }
 window.stopTimer=stopTimer;
+
+async function fullReset(){
+  if(!confirm('⚠️ 전체 초기화를 하면\n\n• 모든 참가자 데이터 삭제\n• 세션 진행 상태 초기화\n• 룸 배정 및 매칭 정보 삭제\n\n새 행사를 시작할 준비가 됩니다.\n계속하시겠어요?')) return;
+  try{
+    const snap=await db.collection('guests').get();
+    for(const d of snap.docs) await deleteDoc(doc(db,'guests',d.id));
+    await setDoc(SESSION_REF(),{
+      code:'1212', step:1,
+      roomAssignment:{}, roomHistory:{},
+      stepStartedAt:null
+    });
+    st.currentStep=2;
+    st.heartsEnabled=false;
+    st.currentRoomAssignment={};
+    st.roomHistory={};
+    st.guests={};
+    clearInterval(st.stepTimerInt);
+    st.stepTimerLeft=0;
+    alert('✅ 전체 초기화 완료!\n새 행사를 시작할 수 있어요.');
+    renderAdminHomeScreen();
+  }catch(e){alert('실패: '+e.message);}
+}
+window.fullReset=fullReset;
 
 async function clearAllGuests(){
   if(!confirm('모든 게스트 데이터를 삭제하시겠어요?')) return;
