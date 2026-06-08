@@ -169,7 +169,8 @@ textarea{resize:none;line-height:1.5;}
 .tl-line{width:1px;flex:1;background:var(--border);margin:3px 0;}
 .tl-content{flex:1;padding-bottom:4px;}
 .tl-time{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.3px;}
-.tl-step{font-size:13px;font-weight:600;margin:2px 0;}
+.tl-step{font-size:13px;font-weight:600;margin:2px 0;color:#fff;}
+.tl-step.done{color:#555;}
 .tl-desc{font-size:11px;color:var(--muted);line-height:1.4;}
 .tl-badge{display:inline-block;font-size:9px;font-weight:700;background:var(--pink);color:var(--white);padding:2px 6px;border-radius:99px;margin-left:4px;}
 .start-btn{padding:7px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:var(--pink);color:var(--white);margin-top:6px;font-family:inherit;}
@@ -1793,13 +1794,14 @@ function renderAdminHomeTimeline(){
           <div class="tl-time">${t.time}</div>
           ${showTimer?`<div id="step-countdown" style="font-size:13px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;">${fmtTime(st.stepTimerLeft||t.duration)}</div>`:''}
         </div>
-        <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
+        <div class="tl-step ${isDone?'done':''}">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
         <div class="tl-desc">${t.desc}</div>
         ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
         ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
       </div>
     </div>`;
   }).join('');
+  if(st.stepTimerLeft>0){const cd=document.getElementById('step-countdown');if(cd)cd.textContent=fmtTime(st.stepTimerLeft);}
 }
 
 function renderAdminHomeRooms(){
@@ -1953,13 +1955,14 @@ function renderAdminTimeline(){
           <div class="tl-time">${t.time}</div>
           ${showTimer?`<div id="step-countdown" style="font-size:13px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;">${fmtTime(st.stepTimerLeft||t.duration)}</div>`:''}
         </div>
-        <div class="tl-step">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
+        <div class="tl-step ${isDone?'done':''}">${t.step}${isNow?'<span class="tl-badge">진행중</span>':''}</div>
         <div class="tl-desc">${t.desc}</div>
         ${canStart?`<button class="start-btn" onclick="startStep(${t.stepIdx})">시작</button>`:''}
         ${canSkip?`<button class="skip-btn" onclick="skipToStep(${t.stepIdx})">건너뛰기</button>`:''}
       </div>
     </div>`;
   }).join('');
+  if(st.stepTimerLeft>0){const cd=document.getElementById('step-countdown');if(cd)cd.textContent=fmtTime(st.stepTimerLeft);}
 }
 
 function startStepTimer(duration, remaining){
