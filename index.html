@@ -857,10 +857,13 @@ const ROOMS=[
 const TIMELINE=[
   {time:"0:00~0:10",step:"입장 & 앱 세팅",desc:"QR 입장, 프로필 작성",state:"done",stepIdx:1,duration:0},
   {time:"0:10~0:20",step:"게임 설명",desc:"진행 방식 안내",state:"now",stepIdx:2,duration:0},
-  {time:"0:20~0:40",step:"1차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:3,duration:20*60},
-  {time:"0:40~1:00",step:"2차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:4,duration:20*60},
-  {time:"1:00~1:20",step:"3차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:5,duration:20*60},
-  {time:"1:20~1:50",step:"프리토킹",desc:"전체 모여서 자유 대화 + 매칭 알림",state:"",stepIdx:6,duration:30*60}
+  {time:"0:20~0:23",step:"1차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:3,duration:3*60},
+  {time:"0:23~0:48",step:"1차 룸 활동",desc:"자기소개 10분 + 대화 15분",state:"",stepIdx:4,duration:25*60},
+  {time:"0:48~0:51",step:"2차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:5,duration:3*60},
+  {time:"0:51~1:16",step:"2차 룸 활동",desc:"자기소개 10분 + 대화 15분",state:"",stepIdx:6,duration:25*60},
+  {time:"1:16~1:19",step:"3차 룸 이동",desc:"각자 배정된 룸으로 이동",state:"",stepIdx:7,duration:3*60},
+  {time:"1:19~1:44",step:"3차 룸 활동",desc:"자기소개 10분 + 대화 15분",state:"",stepIdx:8,duration:25*60},
+  {time:"1:44~2:14",step:"프리토킹",desc:"전체 모여서 자유 대화 + 매칭 알림",state:"",stepIdx:9,duration:30*60}
 ];
 
 // ── STATE ────────────────────────────────────────
@@ -1342,7 +1345,7 @@ function renderPeople(){
   const assignment=st.currentRoomAssignment||{};
   const hasAssignment=Object.keys(assignment).length>0;
   const myRoom=st.myId?assignment[st.myId]:null;
-  const isFreetalking=st.currentStep>=6;
+  const isFreetalking=st.currentStep>=9;
 
   let guests;
   if(isFreetalking){
@@ -1685,7 +1688,7 @@ async function restoreAdminSession(){
       if(d.roomHistory) st.roomHistory=d.roomHistory;
       if(d.step>=3) st.heartsEnabled=true;
       // 타이머 복원
-      if(d.stepStartedAt&&d.step>=3&&d.step<=6){
+      if(d.stepStartedAt&&d.step>=3&&d.step<=9){
         const tl=TIMELINE.find(t=>t.stepIdx===d.step);
         if(tl&&tl.duration>0){
           const elapsed=Math.floor((Date.now()-d.stepStartedAt.toMillis())/1000);
@@ -1781,8 +1784,8 @@ function renderAdminHomeTimeline(){
     const isDone=t.stepIdx<st.currentStep;
     const isNow=t.stepIdx===st.currentStep;
     const isNext=t.stepIdx===st.currentStep+1;
-    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=6;
-    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=9;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=9;
     const showTimer=isNow&&t.duration>0;
     return `<div class="tl-row">
       <div class="tl-left">
@@ -1942,8 +1945,8 @@ function renderAdminTimeline(){
     const isDone=t.stepIdx<st.currentStep;
     const isNow=t.stepIdx===st.currentStep;
     const isNext=t.stepIdx===st.currentStep+1;
-    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=6;
-    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=6;
+    const canStart=isNext&&t.stepIdx>=3&&t.stepIdx<=9;
+    const canSkip=!isDone&&!isNow&&!isNext&&t.stepIdx>=3&&t.stepIdx<=9;
     const showTimer=isNow&&t.duration>0;
     return `<div class="tl-row">
       <div class="tl-left">
@@ -2054,15 +2057,15 @@ async function startStep(idx){
   st.currentStep=idx;
   if(idx>=3) st.heartsEnabled=true;
 
-  // 해당 단계 타이머 시작
   const tl=TIMELINE.find(t=>t.stepIdx===idx);
 
   let assignment=null;
-  if(idx>=3&&idx<=5){
-    const round=idx-2;
+  // 룸 이동 단계에서만 새로 배정 (3=1차이동, 5=2차이동, 7=3차이동)
+  if(idx===3||idx===5||idx===7){
+    const round=idx===3?1:idx===5?2:3;
     assignment=assignRooms(round);
     st.currentRoomAssignment=assignment;
-  } else if(idx===6){
+  } else if(idx===9){
     // 프리토킹: 모든 참가자 Class ROOM 1으로
     const guests=Object.values(st.guests).filter(g=>g.online!==false);
     assignment={};
@@ -2080,7 +2083,7 @@ async function startStep(idx){
   renderAdminHomeTimeline();
   renderAdminHomeRooms();
 
-  // 렌더링 후 타이머 시작 (DOM이 새로 그려진 뒤에 연결해야 작동)
+  // 렌더링 후 타이머 시작
   if(tl&&tl.duration>0) startStepTimer(tl.duration);
 
   if(assignment){
