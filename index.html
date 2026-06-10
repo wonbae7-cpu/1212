@@ -472,6 +472,9 @@ textarea{resize:none;line-height:1.5;}
 
     <!-- 모임 종료 -->
     <div style="margin-top:24px;padding:20px 0;border-top:1px solid var(--border);">
+      <button onclick="sendMatchReveal()" style="width:100%;padding:14px;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;border:none;background:#22c55e;color:#000;font-family:inherit;margin-bottom:8px;">
+        💘 매칭 결과 전송
+      </button>
       <button onclick="fullReset()" style="width:100%;padding:12px;border-radius:var(--r2);font-size:14px;font-weight:600;cursor:pointer;border:1px solid #e74c3c;background:transparent;color:#e74c3c;font-family:inherit;margin-bottom:8px;">
         🔄 전체 초기화 (새 행사 준비)
       </button>
@@ -619,6 +622,22 @@ textarea{resize:none;line-height:1.5;}
   <div class="mc-heart">💗</div>
   <div class="mc-title">매칭이 성사되었어요!</div>
   <div class="mc-sub" id="mc-sub"></div>
+  <div id="mc-contact" style="width:80%;background:#1a1a1a;border-radius:14px;padding:16px 20px;margin-bottom:24px;display:none;">
+    <div style="font-size:11px;color:#555;margin-bottom:10px;text-align:center;">상대방 연락처</div>
+    <div id="mc-kakao" style="display:none;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #222;">
+      <span style="font-size:12px;color:#555;width:60px;flex-shrink:0;">카카오톡</span>
+      <span id="mc-kakao-val" style="font-size:14px;color:#fff;font-weight:600;"></span>
+    </div>
+    <div id="mc-insta" style="display:none;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #222;">
+      <span style="font-size:12px;color:#555;width:60px;flex-shrink:0;">인스타그램</span>
+      <span id="mc-insta-val" style="font-size:14px;color:#fff;font-weight:600;"></span>
+    </div>
+    <div id="mc-phone" style="display:none;align-items:center;gap:10px;padding:8px 0;">
+      <span style="font-size:12px;color:#555;width:60px;flex-shrink:0;">전화번호</span>
+      <span id="mc-phone-val" style="font-size:14px;color:#fff;font-weight:600;"></span>
+    </div>
+    <div id="mc-no-contact" style="display:none;font-size:13px;color:#555;text-align:center;padding:4px 0;">연락처를 입력하지 않았어요</div>
+  </div>
   <button class="btn btn-ghost" style="width:200px;" onclick="closeCel()">확인</button>
 </div>
 
@@ -1176,8 +1195,32 @@ function listenSession(){
     }
     if(d.code){document.getElementById('ap-code-display').textContent=d.code;}
     if(d.matchReveal&&st.myId&&d.matchReveal[st.myId]){
-      const partner=d.matchReveal[st.myId];
-      document.getElementById('mc-sub').textContent=partner+'님과 서로 호감이에요!';
+      const matchData=d.matchReveal[st.myId];
+      const partnerNick=typeof matchData==='string'?matchData:matchData.nick;
+      const partnerId=typeof matchData==='object'?matchData.id:null;
+      document.getElementById('mc-sub').textContent=partnerNick+'님과 서로 호감이에요!';
+      // 연락처 표시
+      const contactBox=document.getElementById('mc-contact');
+      contactBox.style.display='block';
+      const partnerGuest=partnerId?st.guests[partnerId]:Object.values(st.guests).find(g=>g.nick===partnerNick);
+      const contact=partnerGuest?.contact;
+      let hasContact=false;
+      if(contact?.kakao){
+        document.getElementById('mc-kakao').style.display='flex';
+        document.getElementById('mc-kakao-val').textContent=contact.kakao;
+        hasContact=true;
+      } else { document.getElementById('mc-kakao').style.display='none'; }
+      if(contact?.insta){
+        document.getElementById('mc-insta').style.display='flex';
+        document.getElementById('mc-insta-val').textContent=contact.insta;
+        hasContact=true;
+      } else { document.getElementById('mc-insta').style.display='none'; }
+      if(contact?.phone){
+        document.getElementById('mc-phone').style.display='flex';
+        document.getElementById('mc-phone-val').textContent=contact.phone;
+        hasContact=true;
+      } else { document.getElementById('mc-phone').style.display='none'; }
+      document.getElementById('mc-no-contact').style.display=hasContact?'none':'block';
       document.getElementById('match-cel').classList.add('show');
     }
   });
@@ -2311,6 +2354,33 @@ async function stopTimer(){
   renderAdminHomeScreen();
 }
 window.stopTimer=stopTimer;
+
+async function sendMatchReveal(){
+  if(!confirm('매칭 결과를 모든 참가자에게 전송할까요?\n서로 호감인 참가자에게 상대방 연락처가 공개됩니다.')) return;
+  const gs=Object.values(st.guests);
+  const matchReveal={};
+  const paired=new Set();
+  gs.forEach(g=>{
+    if(!g.hearts) return;
+    Object.entries(g.hearts).forEach(([tid,v])=>{
+      if(v&&st.guests[tid]?.hearts?.[g.id]){
+        const key=[g.id,tid].sort().join('-');
+        if(paired.has(key)) return;
+        paired.add(key);
+        // 서로에게 상대방 닉+ID 저장
+        matchReveal[g.id]={nick:st.guests[tid].nick, id:tid};
+        matchReveal[tid]={nick:g.nick, id:g.id};
+      }
+    });
+  });
+  if(!Object.keys(matchReveal).length){
+    alert('서로 호감인 매칭 쌍이 없어요!');
+    return;
+  }
+  await setDoc(SESSION_REF(),{matchReveal},{merge:true});
+  alert(`✅ 매칭 결과 전송 완료!\n${paired.size}쌍에게 연락처가 공개됐어요.`);
+}
+window.sendMatchReveal=sendMatchReveal;
 
 async function fullReset(){
   if(!confirm('⚠️ 전체 초기화를 하면\n\n• 모든 참가자 데이터 삭제\n• 세션 진행 상태 초기화\n• 룸 배정 및 매칭 정보 삭제\n\n새 행사를 시작할 준비가 됩니다.\n계속하시겠어요?')) return;
